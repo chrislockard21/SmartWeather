@@ -1,11 +1,11 @@
 # SmartWeather app
-The goal of this project is to create an applciation to provide users a weather forecast of their local area. Additional requirmenets will be derived in the requirments documentation of the project - [requirments](https://drive.google.com/drive/folders/1N_JkxGc9pKiHF-Fs-VED2meeDsw3QrKc).
+The goal of this project is to create an application to provide users a weather forecast of their local area. Additional requirements will be derived in the requirements documentation of the project - [requirments](https://drive.google.com/drive/folders/1N_JkxGc9pKiHF-Fs-VED2meeDsw3QrKc).
 
 ## Getting started
 This section will explain the directory/project structure and identify important files. We will also cover some django commands that are important in getting the project started.
 
 ### Starting the server
-Run the following command to start the developement server. This will allow you to open the web application in your browser.
+Run the following command to start the development server. This will allow you to open the web application in your browser.
 
 Command:
 ```bash
@@ -17,7 +17,7 @@ http://localhost:8000
 ```
 
 ### Migrating models to the database
-Django communicates with databases via models. See the file discriptions later in this readme for more details, but the following commands will allow you to commit changes to the database.
+Django communicates with databases via models. See the file descriptions later in this readme for more details, but the following commands will allow you to commit changes to the database.
 
 Commands:
 ```bash
@@ -108,7 +108,7 @@ def foo(request, pk):
 ```
 
 #### views.py
-This is the heart of framework projects and links the model data with the front end templates. They are relatively simple when you get used to them, but most views have requirmenets that can be tricky. See the current views file for an example of the registration view. Most views however, will follow the structure below:
+This is the heart of framework projects and links the model data with the front end templates. They are relatively simple when you get used to them, but most views have requirements that can be tricky. See the current views file for an example of the registration view. Most views however, will follow the structure below. Note that each view defaults to a GET request. Use if statements to determine if request.method == 'POST' if the user is submitting data.
 
 ```python
 def example(request):
@@ -134,7 +134,7 @@ This directory is used to store images, script files and CSS files. By default, 
 The default database in this project is sqlite and is included in this repo. Be sure to include it on future commits so that the super users and models can be retained without the need to re-create them. If it is determined that the projects needs to be production ready, we will set up a mysql database in a docker container to support the application.
 
 ## Tips
-The server will update live, so if you you get an error when starting the server, simply editing and saving the correction to the error should restart the server and allow you to see your changes. This will not work on rare occations where you will need to escape the server with Ctrl + c and restart.
+The server will update live, so if you you get an error when starting the server, simply editing and saving the correction to the error should restart the server and allow you to see your changes. This will not work on rare occasions where you will need to escape the server with Ctrl + c and restart.
 
 ## Tools
 * Python

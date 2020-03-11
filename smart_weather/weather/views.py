@@ -7,12 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 def index(request):
     template_name = 'weather/index.html'
-
-    if request.method == 'POST':
-        pass
-
     context = {}
-
     return render(request, template_name, context)
 
 def register(request):
