@@ -130,6 +130,11 @@ This directory houses the templates that will be used for the project. You can s
 #### static
 This directory is used to store images, script files and CSS files. By default, there is a main.css and main.js file. If you make changes to these files, just know that they will need to be linked in your templates.
 
+## Developer interactions
+UI developer(s) - you will probably spend most of your time in the templates and static directories with some exposure to the views to see what data is being passed to the templates. You should be able to write native HTML/CSS/JS as you would for a traditional web app.
+
+Back end developer(s) - you will primarily be working in the views and models files where you will create database models and create the views that will render the templates with database data.
+
 ## Database
 The default database in this project is sqlite and is included in this repo. Be sure to include it on future commits so that the super users and models can be retained without the need to re-create them. If it is determined that the projects needs to be production ready, we will set up a mysql database in a docker container to support the application.
 
