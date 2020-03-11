@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>SmartWeather</title>
+    </head>
+    <body>
+        <ul>
+            <li><a href="{% url 'weather:index' %}">Index</a></li>
+            {% if not user.is_authenticated %}
+                <li><a href="{% url 'weather:login' %}">Login</a></li>
+                <li><a href="{% url 'weather:register' %}">Register</a></li>
+            {% else %}
+                <li><a href="{% url 'weather:logout' %}">Logout</a></li>
+            {% endif %}
+        </ul>
+        <form method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>

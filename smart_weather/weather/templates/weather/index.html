@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>SmartWeather</title>
+        <link rel="stylesheet" href="{% static 'weather/static/css/main.css' %}">
+    </head>
+    <body>
+        <ul>
+            <li><a href="{% url 'weather:index' %}">Index</a></li>
+            {% if not user.is_authenticated %}
+                <li><a href="{% url 'weather:login' %}">Login</a></li>
+                <li><a href="{% url 'weather:register' %}">Register</a></li>
+            {% else %}
+                <li><a href="{% url 'weather:logout' %}">Logout</a></li>
+            {% endif %}
+        </ul>
+        <h1>Test</h1>
+    </body>
+    <script src="{% static 'weather/static/js/main.js' %}" type="text/javascript"></script>
+</html>
