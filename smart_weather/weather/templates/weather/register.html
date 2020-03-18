@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title>SmartWeather</title>
-    </head>
-    <body>
+{% extends "weather/base.html" %}
+    {% block body %}
         <ul>
             <li><a href="{% url 'weather:index' %}">Index</a></li>
             {% if not user.is_authenticated %}
@@ -19,5 +14,4 @@
             {{form.as_p}}
             <button type="submit">Submit</button>
         </form>
-    </body>
-</html>
+    {% endblock %}
