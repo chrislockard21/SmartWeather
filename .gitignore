@@ -2,3 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+*.class
+target
+/bin/
+.*
+*.log
+*.log.*
