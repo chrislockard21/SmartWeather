@@ -1,19 +1,27 @@
 from django.shortcuts import render, redirect
+
+from . import weather_util
 from .forms import RegisterForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
+
 
 # Create your views here.
 
 def index(request):
     template_name = 'weather/index.html'
-    context = {}
+    weather_utils = weather_util.WeatherUtil()
+    context = {
+        'weather': weather_utils.get_weather_forecast_by_location_str("Raleigh")
+    }
     return render(request, template_name, context)
+
 
 def register(request):
     template_name = 'weather/register.html'
 
     if request.method == 'POST':
+        print("register::POST")
         form = RegisterForm(request.POST)
         if form.is_valid():
             # Holds off on writing to the database
@@ -36,6 +44,7 @@ def register(request):
                         login(request, user)
                         return redirect('weather:index')
     else:
+        print("register::GET")
         form = RegisterForm(None)
 
     context = {

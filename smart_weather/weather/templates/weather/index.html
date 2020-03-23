@@ -9,7 +9,25 @@
                 <li><a href="{% url 'weather:logout' %}">Logout</a></li>
             {% endif %}
         </ul>
-        <h1>Test</h1>
+
+        {% if weather %}
+            <h2>Max Temps for Raleigh</h2>
+            <table border= "1px solid black">
+                <tr>
+                    <th>Date</th>
+                    <th>Max Temp (F)</th>
+                </tr>
+            {% for val in weather.max_temps %}
+                <tr>
+                    <td>{{val.datetime}}</td>
+                    <td>{{val.temp}}</td>
+                </tr>
+            {% endfor %}
+<!--            <p>Weather: {{weather}}</p>-->
+            </table>
+        {% else %}
+            <h2>No Weather Info Available</h2>>
+        {% endif %}
 
         <input id="enterZip"></input><button id="submitZip" onclick="getWeatherLocationByZip()">Submit</button><br/>
 
