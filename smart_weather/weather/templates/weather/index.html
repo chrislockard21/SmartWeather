@@ -13,5 +13,11 @@
 
         <input id="enterZip"></input><button id="submitZip" onclick="getWeatherLocationByZip()">Submit</button><br/>
 
-        <iframe id = "map" width="100%" height="600px" src=""></iframe>
+<!--        <iframe id = "map" width="100%" height="600px" src=""></iframe>-->
+<style>.embed-container {position: relative; padding-bottom: 80%; height: 0; max-width: 100%;} .embed-container iframe, .embed-container object, .embed-container iframe{position: absolute; top: 0; left: 0; width: 100%; height: 50%;} small{position: absolute; z-index: 40; bottom: 0; margin-bottom: -15px;}</style>
+<div class="embed-container">
+    <iframe width="100%" height="200" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="Smart Weather" id = "map"
+            src="//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light">
+    </iframe>
+</div>
     {% endblock %}
