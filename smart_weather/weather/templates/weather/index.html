@@ -1,23 +1,169 @@
 {% extends "weather/base.html" %}
-    {% block body %}
-        <ul>
-            <li><a href="{% url 'weather:index' %}">Index</a></li>
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="{% url 'weather:index' %}">Smart Weather Application</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
             {% if not user.is_authenticated %}
-                <li><a href="{% url 'weather:login' %}">Login</a></li>
-                <li><a href="{% url 'weather:register' %}">Register</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'weather:login' %}">Login</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'weather:register' %}">Register</a></li>
             {% else %}
-                <li><a href="{% url 'weather:logout' %}">Logout</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'weather:logout' %}">Logout</a></li>
             {% endif %}
         </ul>
-        <h1>Test</h1>
-
-        <input id="enterZip"></input><button id="submitZip" onclick="getWeatherLocationByZip()">Submit</button><br/>
-
-<!--        <iframe id = "map" width="100%" height="600px" src=""></iframe>-->
-<style>.embed-container {position: relative; padding-bottom: 80%; height: 0; max-width: 100%;} .embed-container iframe, .embed-container object, .embed-container iframe{position: absolute; top: 0; left: 0; width: 100%; height: 50%;} small{position: absolute; z-index: 40; bottom: 0; margin-bottom: -15px;}</style>
-<div class="embed-container">
-    <iframe width="100%" height="200" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="Smart Weather" id = "map"
-            src="//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light">
-    </iframe>
+    </div>
+</nav>
+{% if user.is_authenticated %}
+<div class="grid-container">
+    <div class="item1">
+        <div>
+            <h5>Current Location: <span id="location"></span></h5>
+        </div>
+        <div class="zipInput d-flex w-50 p-3">
+            <input class="form-control" id="enterZip"/>
+            <button id="submitZip" class="btn btn-primary" onclick="getWeatherLocationByZip()">Submit</button>
+            <br/>
+        </div>
+    </div>
+    <div class="item2 card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6 text-center">
+                    <img class="mainIcon"
+                         src="../../static/weather/images/weather_icons/iconfinder_weather_cloud_cloudy_sun.png">
+                    <h4>Temperature placeholder</h4>
+                    <p>Weather type placeholder</p>
+                </div>
+                <div class="col-sm-6 text-center">
+                    <h5>24 HOUR FORECAST</h5>
+                    <div class="overflow-auto">
+                        <table class="w-100">
+                            <tbody>
+                            <tr>
+                                <!--for loop 24 hour weather data-->
+                                <td>temp</td>
+                                <td>
+                                    <img class="subIcon"
+                                         src="../../static/weather/images/weather_icons/iconfinder_weather_cloud_cloudy_sun.png">
+                                </td>
+                                <td>time placeholder</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="item3 card">
+        <div class="card-body">
+            <h5 class="card-title">POSSIBLE ACTIVITIES</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+                content.</p>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#activityModal">
+                Add Activity
+            </button>
+        </div>
+    </div>
+    <div class="item4 card">
+        <div class="card-body">
+            <h5 class="card-title">PRODUCT RECOMMENDATIONS</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+                content.</p>
+        </div>
+    </div>
+    <div class="item5 card">
+        <div class="card-body">
+            <h5 class="card-title">CLOTHING RECOMMENDATIONS</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+                content.</p>
+        </div>
+    </div>
+    <div class="item6 card">
+        <div class="card-body">
+            <h5 class="card-title">PLANT CARE RECOMMENDATIONS</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+                content.</p>
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#plantModal">
+                Edit Plants
+            </button>
+        </div>
+    </div>
+    <div class="item7 card">
+        <div class="embed-container">
+            <iframe width="100%" height="200" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                    title="Smart Weather" id="map"
+                    src="//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light">
+            </iframe>
+        </div>
+    </div>
 </div>
-    {% endblock %}
+
+
+<!-- Activity Modal -->
+<div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-labelledby="activityModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="activityModalLabel">Add an Activity</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input class="form-control" id="activity"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Plant Modal -->
+<div class="modal fade" id="plantModal" tabindex="-1" role="dialog" aria-labelledby="plantModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="plantModalLabel">Edit Plants</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <ul>
+                        <li>List current plants</li>
+                    </ul>
+                </div>
+                <label>Add a new plant</label>
+                <div class="d-flex">
+                    <input class="form-control" id="plant"/>
+                    <button class="btn btn-primary" type="submit">Add</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="mt-5 text-center">
+    <h1>Log in to use this application</h1>
+</div>
+{% endif %}
+
+{% endblock %}
