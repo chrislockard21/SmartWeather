@@ -10,23 +10,50 @@
             {% endif %}
         </ul>
 
-        {% if weather %}
-            <h2>Max Temps for Raleigh</h2>
+        {% if weather.daily_forecast %}
+            <h2>Daily Forecast for Raleigh</h2>
             <table border= "1px solid black">
                 <tr>
                     <th>Date</th>
+                    <th>Min Temp (F)</th>
                     <th>Max Temp (F)</th>
                 </tr>
-            {% for val in weather.max_temps %}
+            {% for val in weather.daily_forecast %}
                 <tr>
-                    <td>{{val.datetime}}</td>
-                    <td>{{val.temp}}</td>
+                    <td>{{val.date}}</td>
+                    <td>{{val.min_temperature}}</td>
+                    <td>{{val.max_temperature}}</td>
                 </tr>
             {% endfor %}
 <!--            <p>Weather: {{weather}}</p>-->
             </table>
         {% else %}
-            <h2>No Weather Info Available</h2>>
+            <h2>No Daily Forecast Available</h2>>
+        {% endif %}
+
+        {% if weather.hourly_forecast %}
+            <h2>Hourly Forecast for Raleigh</h2>
+            <table border= "1px solid black">
+                <tr>
+                    <th>Date</th>
+                    <th>Hour</th>
+                    <th>Temperature (F)</th>
+                    <th>Chance of Precipatation (%)</th>
+                    <th>Wind Speed (???)</th>
+                </tr>
+            {% for val in weather.hourly_forecast %}
+                <tr>
+                    <td>{{val.date}}</td>
+                    <td>{{val.hour}}</td>
+                    <td>{{val.temperature}}</td>
+                    <td>{{val.precipitation_probability}}</td>
+                    <td>{{val.wind_speed}}</td>
+                </tr>
+            {% endfor %}
+<!--            <p>Weather: {{weather}}</p>-->
+            </table>
+        {% else %}
+            <h2>No Hourly Forecast Available</h2>>
         {% endif %}
 
         <input id="enterZip"></input><button id="submitZip" onclick="getWeatherLocationByZip()">Submit</button><br/>

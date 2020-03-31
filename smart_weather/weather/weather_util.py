@@ -1,6 +1,8 @@
 import requests
 from geopy.geocoders import Nominatim
-# import json
+import json
+from datetime import datetime, timedelta
+import re
 
 
 def convert_c_to_f(temp_in_c, decimal_places):
@@ -8,48 +10,104 @@ def convert_c_to_f(temp_in_c, decimal_places):
     return round(ret_val, decimal_places)
 
 
-# from datetime import datetime
-# from dateutil import tz
-# def convert_utc_to_local(utc_date_time):
-#     from_zone = tz.gettz('GMT')
-#     to_zone = tz.tzlocal()
-#     utc = datetime.strptime(utc_date_time, '%Y-%m-%d %H:%M:%S')
-#     utc = utc.replace(tzinfo=from_zone)
-#     return utc.astimezone(to_zone)
+def get_mod_day_hour(date_with_modifier):
+    modifier = date_with_modifier[26:]
+    mod_days = re.findall(r'^P(\d+)D.*', modifier)
+    mod_hours = re.findall(r'.*T(\d+)H$', modifier)
+    if len(mod_days) == 1:
+        mod_days = str(mod_days[0])
+    else:
+        mod_days = 0
+    if len(mod_hours) == 1:
+        mod_hours = str(mod_hours[0])
+    else:
+        mod_hours = 0
+
+    return {
+        'mod_days': mod_days,
+        'mod_hours': mod_hours
+    }
 
 
-def get_temp_list(weather):
-    temp_list = []
-    for temp in weather.get("properties").get("temperature").get("values"):
-        temp_list.append({
-            "datetime": temp.get("validTime")[0:13],
-            "temp": convert_c_to_f(temp.get("value"), 0)
+def get_date_hour_list(date_with_modifier):
+    date = date_with_modifier[0:10]
+    hour = int(date_with_modifier[11:13])
+
+    mod_day_hours = get_mod_day_hour(date_with_modifier)
+    mod_days = int(mod_day_hours.get("mod_days"))
+    mod_hours = int(mod_day_hours.get("mod_hours"))
+
+    mod_hours = mod_hours + (mod_days*24)
+
+    date_obj = datetime.strptime(date, "%Y-%m-%d")
+    date_hour_list = []
+    while int(mod_hours) > 0:
+        if hour == 24:
+            hour = 0
+            date_obj = date_obj + timedelta(days=1)
+
+        date_hour_list.append({
+            'date': date_obj.strftime("%Y-%m-%d"),
+            'hour': hour
         })
-    return temp_list
+
+        hour = hour + 1
+        mod_hours = mod_hours - 1
+
+    return date_hour_list
 
 
-def get_max_temp_list(weather):
-    max_temp_list = []
-    for temp in weather.get("properties").get("maxTemperature").get("values"):
-        max_temp_list.append({
-            "datetime": temp.get("validTime")[0:10],
-            "temp": convert_c_to_f(temp.get("value"), 0)
-        })
-        # max_temp_list += dict({
-        #     "datetime": temp.get("validTime")[0:10],
-        #     "temp": convert_c_to_f(temp.get("value"))
-        # })
-    return max_temp_list
+def get_max_min_temp_values(json_list, return_a_list):
+    """
+    MaxTemperature and MinTemperature are unique and are parsed with this logic
+    """
+    ret_list = []
+    ret_obj = {}
+    for rec in json_list["values"]:
+        valid_time = rec["validTime"]
+        value = rec["value"]
+        date = valid_time[0:10]
+
+        new_obj = {
+            'date': date,
+            'value': value
+        }
+        ret_list.append(new_obj)
+        ret_obj[date] = new_obj
+
+    if return_a_list:
+        return ret_list
+    else:
+        return ret_obj
 
 
-def get_min_temp_list(weather):
-    temp_list = []
-    for temp in weather.get("properties").get("minTemperature").get("values"):
-        temp_list.append({
-            'datetime': temp.get("validTime")[0:10],
-            'temp': convert_c_to_f(temp.get("value"), 0)
-        })
-    return temp_list
+def normalize_time_and_values(json_list, return_list):
+    norm_time_val_obj = {}
+    norm_time_val_list = []
+
+    for rec in json_list["values"]:
+        valid_time = rec["validTime"]
+        value = rec["value"]
+
+        date_hour_list = get_date_hour_list(valid_time)
+
+        for date_hour in date_hour_list:
+            date = date_hour.get("date")
+            hour = date_hour.get("hour")
+            new_val = {
+                'date': date,
+                'hour': hour,
+                'value': value
+            }
+            norm_time_val_obj[date+"_"+str(hour)] = new_val
+            norm_time_val_list.append(new_val)
+
+    if return_list:
+        return norm_time_val_list
+    else:
+        return norm_time_val_obj
+    # for ntv in norm_time_val_list:
+    #     print("Date:" + ntv.get("date") + " Hour:" + str(ntv.get("hour")) + " Value:" + str(ntv.get("value")))
 
 
 class WeatherUtil:
@@ -86,31 +144,68 @@ class WeatherUtil:
 
         url = self.base_url + "gridpoints/" + str(cwa) + "/" + str(grid_x) + "," + str(grid_y)
         res = requests.get(url, headers=self.request_header)
-        return res.json()
+        return res
 
     def get_weather_by_location_str(self, location_str):
         location = self.get_location(location_str)
         return self.get_weather_by_lat_long(location.latitude, location.longitude)
 
-    def get_weather_forcast_by_lat_long(self, lat, long):
+    def get_weather_forecast_by_lat_long(self, lat, long):
         weather = self.get_weather_by_lat_long(lat, long)
+
+        def get_hourly_forecast(weather_json_str):
+            weather_props = json.loads(weather_json_str.text)["properties"]
+            hourly_temps = normalize_time_and_values(weather_props["temperature"], True)
+            precipitation_probabilities = normalize_time_and_values(weather_props["probabilityOfPrecipitation"], False)
+            wind_speeds = normalize_time_and_values(weather_props["windSpeed"], False)
+
+            hourly_forecast = []
+            for temp in hourly_temps:
+                date = temp.get("date")
+                hour = temp.get("hour")
+                precipitation_probability = precipitation_probabilities[date + "_" + str(hour)]
+                wind_speed = wind_speeds[date + "_" + str(hour)]
+                hourly_forecast.append({
+                    'date': date,
+                    'hour': hour,
+                    'temperature': convert_c_to_f(temp.get("value"), 0),
+                    'precipitation_probability': precipitation_probability.get("value"),
+                    'wind_speed': wind_speed.get("value")
+                })
+            return hourly_forecast
+
+        def get_daily_forecast(weather_json_str):
+            weather_props = json.loads(weather_json_str.text)["properties"]
+            max_temps = get_max_min_temp_values(weather_props["maxTemperature"], True)
+            min_temps = get_max_min_temp_values(weather_props["minTemperature"], False)
+
+            hourly_forecast = []
+
+            for temp in max_temps:
+                date = temp.get("date")
+                max_temp = temp.get("value")
+                min_temp = min_temps.get(date, {}).get("value", None)
+                if min_temp:
+                    hourly_forecast.append({
+                        'date': date,
+                        'max_temperature': convert_c_to_f(max_temp, 0),
+                        'min_temperature': convert_c_to_f(min_temp, 0)
+                    })
+
+            return hourly_forecast
+
         weather_forecast = {
-            # 'temps':        weather.get("properties").get("temperature").get("values"),
-            'max_temps':    get_max_temp_list(weather),
-            'min_temps':    get_min_temp_list(weather)
+            'hourly_forecast': get_hourly_forecast(weather),
+            'daily_forecast': get_daily_forecast(weather)
         }
         return weather_forecast
 
     def get_weather_forecast_by_location_str(self, location_str):
         location = self.get_location(location_str)
-        return self.get_weather_forcast_by_lat_long(location.latitude, location.longitude)
+        return self.get_weather_forecast_by_lat_long(location.latitude, location.longitude)
 
 
 # weather_utils = WeatherUtil()
 # weather_utils.get_weather_grid()
 # weather_utils.get_location("raliegh, nc")
-# print("weather test: " + str(weather_utils.get_weather_by_location_str("Raleigh")))
-# print(convert_c_to_f("13.333"), 0)
-# print(convert_utc_to_local("2020-03-23 08:00:00"))
-
 # print(weather_utils.get_weather_forecast_by_location_str("Raleigh"))
