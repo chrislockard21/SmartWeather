@@ -8,3 +8,9 @@ venv
 env
 
 db.sqlite3
+*.class
+target
+/bin/
+.*
+*.log
+*.log.*
