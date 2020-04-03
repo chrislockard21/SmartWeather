@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.idea/
+venv
+env
+
+db.sqlite3
 *.class
 target
 /bin/
