@@ -35,71 +35,46 @@
                 <div class="col-sm-6 text-center">
                     <img class="mainIcon"
                          src="../../static/weather/images/weather_icons/iconfinder_weather_cloud_cloudy_sun.png">
-                    <h4>Temperature placeholder</h4>
-                    <p>Weather type placeholder</p>
+                    <h1 style="font-size: 3.5rem">{{weather.current_temp}} &#730;F</h1>
                 </div>
                 <div class="col-sm-6 text-center">
-                  {% if weather.daily_forecast %}
-                    <h2>Daily Forecast for Raleigh</h2>
-                    <table border= "1px solid black">
+                    {% if weather.daily_forecast %}
+                    <h5>DAILY FORECAST</h5>
+                    <table class="w-100">
+                        {% for val in weather.daily_forecast %}
                         <tr>
-                            <th>Date</th>
-                            <th>Min Temp (F)</th>
-                            <th>Max Temp (F)</th>
+                            <td>{{val.day}}</td>
+                            <td>H: {{val.max_temperature}} &#730;F</td>
+                            <td>L: {{val.min_temperature}} &#730;F</td>
                         </tr>
-                    {% for val in weather.daily_forecast %}
-                        <tr>
-                            <td>{{val.date}}</td>
-                            <td>{{val.min_temperature}}</td>
-                            <td>{{val.max_temperature}}</td>
-                        </tr>
-                    {% endfor %}
-        <!--            <p>Weather: {{weather}}</p>-->
+                        {% endfor %}
+                        <!--            <p>Weather: {{weather}}</p>-->
                     </table>
-                {% else %}
-                    <h2>No Daily Forecast Available</h2>>
-                {% endif %}
-
-                {% if weather.hourly_forecast %}
-                    <h2>Hourly Forecast for Raleigh</h2>
-                    <table border= "1px solid black">
-                        <tr>
-                            <th>Date</th>
-                            <th>Hour</th>
-                            <th>Temperature (F)</th>
-                            <th>Chance of Precipatation (%)</th>
-                            <th>Wind Speed (???)</th>
-                        </tr>
-                    {% for val in weather.hourly_forecast %}
-                        <tr>
-                            <td>{{val.date}}</td>
-                            <td>{{val.hour}}</td>
-                            <td>{{val.temperature}}</td>
-                            <td>{{val.precipitation_probability}}</td>
-                            <td>{{val.wind_speed}}</td>
-                        </tr>
-                    {% endfor %}
-        <!--            <p>Weather: {{weather}}</p>-->
-                    </table>
-                {% else %}
-                    <h2>No Hourly Forecast Available</h2>>
-                {% endif %}
-                  
+                    {% else %}
+                    <h5>No Daily Forecast Available</h5>>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="pt-4 row text-center">
+                <div class="col-sm-12">
                     <h5>24 HOUR FORECAST</h5>
                     <div class="overflow-auto">
+                        {% if weather.hourly_forecast %}
                         <table class="w-100">
-                            <tbody>
                             <tr>
-                                <!--for loop 24 hour weather data-->
-                                <td>temp</td>
-                                <td>
-                                    <img class="subIcon"
-                                         src="../../static/weather/images/weather_icons/iconfinder_weather_cloud_cloudy_sun.png">
+                                {% for val in weather.hourly_forecast %}
+                                <td class="px-2" style="min-width: 100px">
+                                    <strong>{{val.temperature}} &#730;F</strong><br/>
+                                    {{val.hour}}<br/>
+                                    &#127783; {{val.precipitation_probability}}%<br/>
+                                    &#x1F32B; {{val.wind_speed}}
                                 </td>
-                                <td>time placeholder</td>
+                                {% endfor %}
                             </tr>
-                            </tbody>
                         </table>
+                        {% else %}
+                        <h2>No Hourly Forecast Available</h2>>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -153,7 +128,7 @@
     </div>
 </div>
 
-  
+
 <!-- Activity Modal -->
 <div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-labelledby="activityModalLabel"
      aria-hidden="true">

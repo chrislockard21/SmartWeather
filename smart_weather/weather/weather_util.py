@@ -1,7 +1,7 @@
 import requests
 from geopy.geocoders import Nominatim
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import re
 
 
@@ -37,7 +37,7 @@ def get_date_hour_list(date_with_modifier):
     mod_days = int(mod_day_hours.get("mod_days"))
     mod_hours = int(mod_day_hours.get("mod_hours"))
 
-    mod_hours = mod_hours + (mod_days*24)
+    mod_hours = mod_hours + (mod_days * 24)
 
     date_obj = datetime.strptime(date, "%Y-%m-%d")
     date_hour_list = []
@@ -99,7 +99,7 @@ def normalize_time_and_values(json_list, return_list):
                 'hour': hour,
                 'value': value
             }
-            norm_time_val_obj[date+"_"+str(hour)] = new_val
+            norm_time_val_obj[date + "_" + str(hour)] = new_val
             norm_time_val_list.append(new_val)
 
     if return_list:
@@ -124,6 +124,7 @@ class WeatherUtil:
     weather.gov manages grids of weather information, need to know the grid before getting the weather report
     latitude and longitude needed to find a grid
     """
+
     def get_weather_grid(self, lat, long):
         req_url = self.base_url + "points/" + str(lat) + "%2C" + str(long)
         grid = requests.get(req_url, headers=self.request_header)
@@ -160,6 +161,7 @@ class WeatherUtil:
             wind_speeds = normalize_time_and_values(weather_props["windSpeed"], False)
 
             hourly_forecast = []
+            count = 0
             for temp in hourly_temps:
                 date = temp.get("date")
                 hour = temp.get("hour")
@@ -170,8 +172,11 @@ class WeatherUtil:
                     'hour': hour,
                     'temperature': convert_c_to_f(temp.get("value"), 0),
                     'precipitation_probability': precipitation_probability.get("value"),
-                    'wind_speed': wind_speed.get("value")
+                    'wind_speed': round(wind_speed.get("value"), 2)
                 })
+                count += 1
+                if count == 24:
+                    break
             return hourly_forecast
 
         def get_daily_forecast(weather_json_str):
@@ -182,28 +187,35 @@ class WeatherUtil:
             hourly_forecast = []
 
             for temp in max_temps:
-                date = temp.get("date")
+                d = temp.get("date")
                 max_temp = temp.get("value")
-                min_temp = min_temps.get(date, {}).get("value", None)
+                min_temp = min_temps.get(d, {}).get("value", None)
+                day = datetime.strptime(d, "%Y-%m-%d").strftime('%A')
+                if date.today().strftime("%Y-%m-%d") == d:
+                    day = "Today"
+
                 if min_temp:
                     hourly_forecast.append({
-                        'date': date,
+                        'date': d,
+                        'day': day,
                         'max_temperature': convert_c_to_f(max_temp, 0),
                         'min_temperature': convert_c_to_f(min_temp, 0)
                     })
 
             return hourly_forecast
 
+        hourly = get_hourly_forecast(weather)
         weather_forecast = {
-            'hourly_forecast': get_hourly_forecast(weather),
-            'daily_forecast': get_daily_forecast(weather)
+            'hourly_forecast': hourly,
+            'daily_forecast': get_daily_forecast(weather),
+            'current_temp': hourly[0]['temperature']
+
         }
         return weather_forecast
 
     def get_weather_forecast_by_location_str(self, location_str):
         location = self.get_location(location_str)
         return self.get_weather_forecast_by_lat_long(location.latitude, location.longitude)
-
 
 # weather_utils = WeatherUtil()
 # weather_utils.get_weather_grid()
