@@ -12,6 +12,7 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'weather:login' %}">Login</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'weather:register' %}">Register</a></li>
             {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'weather:add_activity' %}">Add Activity</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'weather:logout' %}">Logout</a></li>
             {% endif %}
         </ul>

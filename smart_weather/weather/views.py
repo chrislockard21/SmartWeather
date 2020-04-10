@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
 from . import weather_util
-from .forms import RegisterForm
+from .forms import RegisterForm, AddActivityForm
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 
@@ -46,6 +46,33 @@ def register(request):
     else:
         print("register::GET")
         form = RegisterForm(None)
+
+    context = {
+        'form': form
+    }
+    return render(request, template_name, context)
+
+
+def add_activity(request):
+    template_name = 'weather/add_activity.html'
+
+    if request.method == 'POST':
+        print("activity::POST")
+        form = AddActivityForm(request.POST)
+        if form.is_valid():
+            # Holds off on writing to the database
+            activity = form.save(commit=False)
+
+            # Gets the cleaned form data
+            name = form.cleaned_data['name']
+            description = form.cleaned_data['description']
+
+            activity.name = name
+            activity.description = description
+            activity.save()
+    else:
+        print("activity::GET")
+        form = AddActivityForm(None)
 
     context = {
         'form': form

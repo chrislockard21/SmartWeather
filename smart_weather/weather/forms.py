@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
+from .models import Activity
 
 
 class RegisterForm(UserCreationForm):
@@ -25,4 +26,19 @@ class RegisterForm(UserCreationForm):
             'username',
             'password1',
             'password2'
+        )
+
+
+class AddActivityForm(forms.ModelForm):
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
+    # min_temp = forms.IntegerField(widget=forms.IntegerField(attrs={'class': 'form-control'}))
+    # max_temp = forms.IntegerField(widget=forms.IntegerField(attrs={'class': 'form-control'}))
+    # precipitation_chance_max = forms.IntegerField(widget=forms.IntegerField(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Activity
+        fields = (
+            'name',
+            'description'
         )
