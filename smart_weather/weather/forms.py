@@ -32,13 +32,15 @@ class RegisterForm(UserCreationForm):
 class AddActivityForm(forms.ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control'}))
-    # min_temp = forms.IntegerField(widget=forms.IntegerField(attrs={'class': 'form-control'}))
-    # max_temp = forms.IntegerField(widget=forms.IntegerField(attrs={'class': 'form-control'}))
+    min_temp = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    max_temp = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     # precipitation_chance_max = forms.IntegerField(widget=forms.IntegerField(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Activity
         fields = (
             'name',
-            'description'
+            'description',
+            'min_temp',
+            'max_temp',
         )

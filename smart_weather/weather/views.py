@@ -70,13 +70,12 @@ def add_activity(request):
             # Holds off on writing to the database
             activity = form.save(commit=False)
 
-            # Gets the cleaned form data
-            name = form.cleaned_data['name']
-            description = form.cleaned_data['description']
-
-            activity.name = name
-            activity.description = description
+            # Sets the user for the activity
+            activity.user = request.user
             activity.save()
+
+            # Redirects the user to the index
+            return redirect('weather:index')
     else:
         print("activity::GET")
         form = AddActivityForm(None)
