@@ -14,12 +14,13 @@ def index(request):
     print('index')
     template_name = 'weather/index.html'
     weather_utils = WeatherUtil()
-    activities = Activity.objects.values()
-    activities_list = list(activities.values())
-    print("Activities: " + str(activities_list))
+    activities = Activity.objects.filter(user=request.user)
+    # activities = Activity.objects.values()
+    # activities_list = list(activities.values())
+    # print("Activities: " + str(activities_list))
     context = {
         'weather': weather_utils.get_weather_forecast_by_location_str("Raleigh"),
-        'activities': activities_list
+        'activities': activities
     }
     return render(request, template_name, context)
 

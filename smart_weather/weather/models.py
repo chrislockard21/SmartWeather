@@ -11,3 +11,6 @@ class Activity(models.Model):
     min_temp = models.IntegerField()
     max_temp = models.IntegerField()
     # precipitation_chance_max = models.IntegerField
+
+    def __str__(self):
+        return self.name
