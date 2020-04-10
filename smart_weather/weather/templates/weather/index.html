@@ -84,8 +84,13 @@
     <div class="item3 card">
         <div class="card-body">
             <h5 class="card-title">POSSIBLE ACTIVITIES</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
+            {% if activities %}
+                {% for activity in activities %}
+                    <p class="card-text">{{activity.name}}</p>
+                {% endfor %}
+            {% else %}
+                <p class="card-text">No Recommended Activities</p>
+            {% endif %}
         </div>
         <div class="card-footer">
             <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#activityModal">

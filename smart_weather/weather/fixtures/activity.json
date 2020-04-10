@@ -1,0 +1,18 @@
+[
+  {
+    "model": "weather.Activity",
+    "pk": 1,
+    "fields": {
+      "name": "Activity One",
+      "description": "Description of activity one"
+    }
+  },
+  {
+    "model": "weather.Activity",
+    "pk": 2,
+    "fields": {
+      "name": "Activity Two",
+      "description": "Description of activity two"
+    }
+  }
+]

@@ -1,18 +1,25 @@
 from django.shortcuts import render, redirect
-
-from . import weather_util
-from .forms import RegisterForm, AddActivityForm
+from django.core import serializers
 from django.contrib.auth import login, authenticate, logout
+
+from .models import Activity
+from .weather_util import WeatherUtil
+from .forms import RegisterForm, AddActivityForm
 from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
 
 def index(request):
+    print('index')
     template_name = 'weather/index.html'
-    weather_utils = weather_util.WeatherUtil()
+    weather_utils = WeatherUtil()
+    activities = Activity.objects.values()
+    activities_list = list(activities.values())
+    print("Activities: " + str(activities_list))
     context = {
-        'weather': weather_utils.get_weather_forecast_by_location_str("Raleigh")
+        'weather': weather_utils.get_weather_forecast_by_location_str("Raleigh"),
+        'activities': activities_list
     }
     return render(request, template_name, context)
 
@@ -78,3 +85,12 @@ def add_activity(request):
         'form': form
     }
     return render(request, template_name, context)
+
+
+# local_activities = Activity.objects.values()
+# local_activities_list = list(local_activities)
+# print("Activities -> " + str(local_activities_list))
+# local_context = {
+#     'activities': local_activities_list
+# }
+# print("Context -> " + str(local_context))
