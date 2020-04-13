@@ -16,7 +16,7 @@ def index(request):
     weather_utils = WeatherUtil()
     print('User -> ' + str(request.user))
     if not request.user.is_anonymous:
-        activities = Activity.objects.filter(user=request.user)
+        activities = Activity.objects.filter(user__in=[request.user, 0])
     else:
         activities = Activity.objects.filter(user=0)
     # activities = Activity.objects.values()
