@@ -14,7 +14,11 @@ def index(request):
     print('index')
     template_name = 'weather/index.html'
     weather_utils = WeatherUtil()
-    activities = Activity.objects.filter(user=request.user)
+    print('User -> ' + str(request.user))
+    if not request.user.is_anonymous:
+        activities = Activity.objects.filter(user=request.user)
+    else:
+        activities = Activity.objects.filter(user=0)
     # activities = Activity.objects.values()
     # activities_list = list(activities.values())
     # print("Activities: " + str(activities_list))
