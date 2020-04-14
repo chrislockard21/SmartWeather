@@ -1,0 +1,29 @@
+{% extends "weather/base.html" %}
+{% block body %}
+<style>
+    body {
+        background-image: linear-gradient(#333333, #4d4d4d);
+        background-repeat: no-repeat;
+        background-size: auto;
+        height: 100vh;
+        overflow: hidden;
+    }
+</style>
+<div class="row justify-content-center mt-5">
+    <div class="col-sm-7">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">Smart Weather Application</h5>
+                <form method="post">
+                    <div class="form-group text-left">
+                        {% csrf_token %}
+                        {{form.as_p}}
+                        <button type="submit" class="btn btn-primary w-100">Add Activity</button>
+                    </div>
+                </form>
+                <a href="{% url 'weather:index' %}">Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
