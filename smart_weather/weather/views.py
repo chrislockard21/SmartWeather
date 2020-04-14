@@ -19,12 +19,18 @@ def index(request):
         activities = Activity.objects.filter(user__in=[request.user, 0])
     else:
         activities = Activity.objects.filter(user=0)
-    # activities = Activity.objects.values()
-    # activities_list = list(activities.values())
-    # print("Activities: " + str(activities_list))
+
+    activities_to_display = []
+    for activity in activities:
+        # 50 needs to be replaced with the actual temp
+        if 50 in range(activity.min_temp, activity.max_temp):
+            activities_to_display.append(activity)
+        else:
+            print("didn't add activity: " + activity.name)
+
     context = {
         'weather': weather_utils.get_weather_forecast_by_location_str("Raleigh"),
-        'activities': activities
+        'activities': activities_to_display
     }
     return render(request, template_name, context)
 
