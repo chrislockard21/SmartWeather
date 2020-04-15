@@ -19,6 +19,8 @@ def index(request):
         activities = Activity.objects.filter(user__in=[request.user, 0])
     else:
         activities = Activity.objects.filter(user=0)
+
+    activity_form = AddActivityForm()
     # activities = Activity.objects.values()
     # activities_list = list(activities.values())
     # print("Activities: " + str(activities_list))
@@ -33,7 +35,8 @@ def index(request):
     context = {
         'weather': weather_utils.get_weather_forecast_by_lat_long(location.latitude, location.longitude),
         'activities': activities,
-        'map_src': map_src
+        'map_src': map_src,
+        'activity_form': activity_form
     }
     return render(request, template_name, context)
 
@@ -74,6 +77,7 @@ def register(request):
     return render(request, template_name, context)
 
 
+@login_required
 def add_activity(request):
     template_name = 'weather/add_activity.html'
 
