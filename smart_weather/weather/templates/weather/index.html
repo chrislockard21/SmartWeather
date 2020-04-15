@@ -22,11 +22,11 @@
 <div class="grid-container">
     <div class="item1">
         <div>
-            <h5>Current Location: <span id="location"></span></h5>
+            <h5>{{location_name}} <span id="location"></span></h5>
         </div>
         <div class="zipInput d-flex w-50 p-3">
-            <input class="form-control" id="enterZip"/>
-            <button id="submitZip" class="btn btn-primary" onclick="getWeatherLocationByZip()">Submit</button>
+            <input class="form-control" id="loc_text"/>
+            <a id="submitZip" class="btn btn-primary" href="" onclick="this.href='{% url 'weather:index' %}?loc_text='+document.getElementById('loc_text').value">Submit</a>
             <br/>
         </div>
     </div>
@@ -126,12 +126,13 @@
     </div>
     <div class="item7 card">
         <div class="embed-container">
-            <p>{{ map_src }}</p>
+            {% if map_src %}
             <iframe width="100%" height="200" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
                     title="Smart Weather" id="map"
                     src={{map_src}}>
 <!--                    src="//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light">-->
             </iframe>
+            {% endif %}
         </div>
     </div>
 </div>

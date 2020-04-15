@@ -5,6 +5,11 @@ from datetime import datetime, timedelta, date
 import re
 
 
+def current_location():
+    send_url = 'http://api.ipstack.com/check?access_key=ee0f77cc3b12451b989fccfde279255f'
+    resp = requests.get(send_url)
+    return json.loads(resp.text)
+
 def convert_c_to_f(temp_in_c, decimal_places):
     ret_val = 9.0 / 5.0 * float(temp_in_c) + 32
     return round(ret_val, decimal_places)
@@ -136,16 +141,19 @@ class WeatherUtil:
         return location
 
     def get_weather_by_lat_long(self, lat, long):
-        grid = self.get_weather_grid(lat, long)
-        cwa = grid.get("properties").get("cwa")
-        grid_x = grid.get("properties").get("gridX")
-        grid_y = grid.get("properties").get("gridY")
-        print("latitude({0}), longitude({1}), cwa({2}), gridx({3}), gridy({4})"
-              .format(lat, long, str(cwa), str(grid_x), str(grid_y)))
+        try:
+            grid = self.get_weather_grid(lat, long)
+            cwa = grid.get("properties").get("cwa")
+            grid_x = grid.get("properties").get("gridX")
+            grid_y = grid.get("properties").get("gridY")
+            print("latitude({0}), longitude({1}), cwa({2}), gridx({3}), gridy({4})"
+                  .format(lat, long, str(cwa), str(grid_x), str(grid_y)))
 
-        url = self.base_url + "gridpoints/" + str(cwa) + "/" + str(grid_x) + "," + str(grid_y)
-        res = requests.get(url, headers=self.request_header)
-        return res
+            url = self.base_url + "gridpoints/" + str(cwa) + "/" + str(grid_x) + "," + str(grid_y)
+            res = requests.get(url, headers=self.request_header)
+            return res
+        except:
+            None
 
     def get_weather_by_location_str(self, location_str):
         location = self.get_location(location_str)
@@ -204,14 +212,17 @@ class WeatherUtil:
 
             return hourly_forecast
 
-        hourly = get_hourly_forecast(weather)
-        weather_forecast = {
-            'hourly_forecast': hourly,
-            'daily_forecast': get_daily_forecast(weather),
-            'current_temp': hourly[0]['temperature']
+        try:
+            hourly = get_hourly_forecast(weather)
+            weather_forecast = {
+                'hourly_forecast': hourly,
+                'daily_forecast': get_daily_forecast(weather),
+                'current_temp': hourly[0]['temperature']
 
-        }
-        return weather_forecast
+            }
+            return weather_forecast
+        except:
+            return None
 
     def get_weather_forecast_by_location_str(self, location_str):
         location = self.get_location(location_str)

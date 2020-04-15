@@ -3,41 +3,62 @@ from django.core import serializers
 from django.contrib.auth import login, authenticate, logout
 
 from .models import Activity
-from .weather_util import WeatherUtil
+from .weather_util import WeatherUtil, current_location
 from .forms import RegisterForm, AddActivityForm
 from django.contrib.auth.decorators import login_required
+
+import json
 
 
 # Create your views here.
 
 def index(request):
     print('index: ' + str(request))
+    print('User:  ' + str(request.user))
     template_name = 'weather/index.html'
+
     weather_utils = WeatherUtil()
-    print('User -> ' + str(request.user))
     if not request.user.is_anonymous:
         activities = Activity.objects.filter(user__in=[request.user, 0])
     else:
         activities = Activity.objects.filter(user=0)
 
     activity_form = AddActivityForm()
-    # activities = Activity.objects.values()
-    # activities_list = list(activities.values())
-    # print("Activities: " + str(activities_list))
 
-    location = weather_utils.get_location("Raleigh, North Carolina")
+    loc_text = request.GET.get('loc_text')
+    if not loc_text:
+        location = current_location()
+        lat = location['latitude']
+        long = location['longitude']
+        location_name = "{city}, {state}".format(city=location['city'], state=location['region_name'])
+    else:
+        location = weather_utils.get_location(loc_text)
+        lat = location.latitude
+        long = location.longitude
+        location_name = loc_text
 
-    map_src = "//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&" \
-              "zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light&" \
-              "marker={longitude},{latitude}&center={longitude},{latitude}&level=10"\
-        .format(longitude=location.longitude, latitude=location.latitude)
+    weather_forecast = weather_utils.get_weather_forecast_by_lat_long(lat, long)
 
-    context = {
-        'weather': weather_utils.get_weather_forecast_by_lat_long(location.latitude, location.longitude),
-        'activities': activities,
-        'map_src': map_src,
-        'activity_form': activity_form
-    }
+    if weather_forecast:
+        print("{name}: {lat}, {long}".format(name=location_name, lat=lat, long=long))
+
+        map_src = "//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&" \
+                  "zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light&" \
+                  "marker={longitude},{latitude}&center={longitude},{latitude}&level=10"\
+            .format(longitude=long, latitude=lat)
+
+        context = {
+            'location_name': location_name,
+            'weather': weather_forecast,
+            'activities': activities,
+            'map_src': map_src,
+            'activity_form': activity_form
+        }
+    else:
+        context = {
+            'location_name': "Forecast Unavailable for Location"
+        }
+
     return render(request, template_name, context)
 
 
