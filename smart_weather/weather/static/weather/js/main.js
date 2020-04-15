@@ -17,5 +17,5 @@ function getWeatherLocationByZip() {
 }
 
 window.onload = function() {
-  getWeatherLocation();
+//  getWeatherLocation();
 };

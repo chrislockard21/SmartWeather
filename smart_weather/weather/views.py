@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def index(request):
-    print('index')
+    print('index: ' + str(request))
     template_name = 'weather/index.html'
     weather_utils = WeatherUtil()
     print('User -> ' + str(request.user))
@@ -22,9 +22,18 @@ def index(request):
     # activities = Activity.objects.values()
     # activities_list = list(activities.values())
     # print("Activities: " + str(activities_list))
+
+    location = weather_utils.get_location("Raleigh, North Carolina")
+
+    map_src = "//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&" \
+              "zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light&" \
+              "marker={longitude},{latitude}&center={longitude},{latitude}&level=10"\
+        .format(longitude=location.longitude, latitude=location.latitude)
+
     context = {
-        'weather': weather_utils.get_weather_forecast_by_location_str("Raleigh"),
-        'activities': activities
+        'weather': weather_utils.get_weather_forecast_by_lat_long(location.latitude, location.longitude),
+        'activities': activities,
+        'map_src': map_src
     }
     return render(request, template_name, context)
 
