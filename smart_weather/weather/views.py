@@ -35,7 +35,7 @@ def index(request):
         location = weather_utils.get_location(loc_text)
         lat = location.latitude
         long = location.longitude
-        location_name = loc_text
+        location_name = location.address
 
     weather_forecast = weather_utils.get_weather_forecast_by_lat_long(lat, long)
 
