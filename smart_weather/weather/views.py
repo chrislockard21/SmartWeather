@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate, logout
 
 from .models import Activity, Clothing, PlantCare
 from .weather_util import WeatherUtil, current_location
-from .forms import RegisterForm, AddActivityForm
+from .forms import RegisterForm, AddActivityForm, AddPlantCareForm
 from django.contrib.auth.decorators import login_required
 
 import json
@@ -46,25 +46,25 @@ def index(request):
 
         clothing = Clothing.objects.filter(
                                             # user__in=[request.user, 0],
-                                            min_temp__lte=forecast['max_temperature'],
-                                            max_temp__gte=forecast['min_temperature'],
-                                            min_wind__lte=forecast['max_wind_speed'],
-                                            max_wind__gte=forecast['min_wind_speed'],
-                                            min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                            max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                            # min_temp__lte=forecast['max_temperature'],
+                                            # max_temp__gte=forecast['min_temperature'],
+                                            # min_wind__lte=forecast['max_wind_speed'],
+                                            # max_wind__gte=forecast['min_wind_speed'],
+                                            # min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                            # max_precipitation_chance__gte=forecast['min_precipitation_probability']
                                            ).values().order_by('name')
 
         plants = PlantCare.objects.filter(user__in=[request.user, 0],
-                                          min_temp__lte=forecast['max_temperature'],
-                                          max_temp__gte=forecast['min_temperature'],
-                                          min_wind__lte=forecast['max_wind_speed'],
-                                          max_wind__gte=forecast['min_wind_speed'],
-                                          min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                          max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                          # min_temp__lte=forecast['max_temperature'],
+                                          # max_temp__gte=forecast['min_temperature'],
+                                          # min_wind__lte=forecast['max_wind_speed'],
+                                          # max_wind__gte=forecast['min_wind_speed'],
+                                          # min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                          # max_precipitation_chance__gte=forecast['min_precipitation_probability']
                                           ).values().order_by('name')
     else:
         activities = Activity.objects.filter(user=0)
-        clothing = Clothing.objects.filter(user=0)
+        clothing = Clothing.objects.filter()
         plants = PlantCare.objects.filter(user=0)
 
     if weather_forecast:
@@ -82,7 +82,8 @@ def index(request):
             'clothing': clothing,
             'plants': plants,
             'map_src': map_src,
-            'activity_form': AddActivityForm()
+            'activity_form': AddActivityForm(),
+            'plant_care_form': AddPlantCareForm()
         }
     else:
         context = {
@@ -148,6 +149,33 @@ def add_activity(request):
     else:
         print("activity::GET")
         form = AddActivityForm(None)
+
+    context = {
+        'form': form
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def add_plant_care(request):
+    template_name = 'weather/add_plant_care.html'
+
+    if request.method == 'POST':
+        print("activity::POST")
+        form = AddPlantCareForm(request.POST)
+        if form.is_valid():
+            # Holds off on writing to the database
+            plant_care = form.save(commit=False)
+
+            # Sets the user for the activity
+            plant_care.user = request.user
+            plant_care.save()
+
+            # Redirects the user to the index
+            return redirect('weather:index')
+    else:
+        print("activity::GET")
+        form = AddPlantCareForm(None)
 
     context = {
         'form': form
