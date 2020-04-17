@@ -123,6 +123,8 @@ LOGOUT_REDIRECT_URL='weather:index'
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = 'weather:login'
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "weather/static"),
 ]

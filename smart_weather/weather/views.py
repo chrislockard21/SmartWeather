@@ -2,84 +2,93 @@ from django.shortcuts import render, redirect
 from django.core import serializers
 from django.contrib.auth import login, authenticate, logout
 
-from .models import Activity, Clothing, PlantCare, Promotions
-from .weather_util import WeatherUtil
+from .models import Activity, Clothing, PlantCare
+from .weather_util import WeatherUtil, current_location
 from .forms import RegisterForm, AddActivityForm
 from django.contrib.auth.decorators import login_required
+
+import json
 
 
 # Create your views here.
 
 def index(request):
-    print('index')
+    print('index: ' + str(request))
+    print('User:  ' + str(request.user))
     template_name = 'weather/index.html'
+
     weather_utils = WeatherUtil()
 
-    #This will be replaced
-    location = "Helena, MT"
+    loc_text = request.GET.get('loc_text')
+    if not loc_text:
+        location = current_location()
+        lat = location['latitude']
+        long = location['longitude']
+        location_name = "{city}, {state}".format(city=location['city'], state=location['region_name'])
+    else:
+        location = weather_utils.get_location(loc_text)
+        lat = location.latitude
+        long = location.longitude
+        location_name = location.address
 
-    forecast = (weather_utils.get_weather_forecast_by_location_str(location))['daily_forecast'][0]
-    daily = (weather_utils.get_weather_forecast_by_location_str(location))
-    print('User -> ' + str(request.user))
+    weather_forecast = weather_utils.get_weather_forecast_by_lat_long(lat, long)
+    forecast = weather_forecast['daily_forecast'][0]
 
     if not request.user.is_anonymous:
         activities = Activity.objects.filter(user__in=[request.user, 0],
                                              min_temp__lte=forecast['max_temperature'],
-                                             max_temp__gte=forecast['min_temperature']
-                                             #   min_wind__lte=forecast['max_wind_speed'],
-                                             #   max_wind__gte=forecast['min_wind_speed'],
-                                             #   min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                             #   max_precipitation_chance__lte=forecast['min_precipitation_probability']
+                                             max_temp__gte=forecast['min_temperature'],
+                                             min_wind__lte=forecast['max_wind_speed'],
+                                             max_wind__gte=forecast['min_wind_speed'],
+                                             min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                             max_precipitation_chance__gte=forecast['min_precipitation_probability']
                                              ).values().order_by('name')
 
-        clothing = Clothing.objects.filter(user__in=[request.user, 0],
-                                           min_temp__lte=forecast['max_temperature'],
-                                           max_temp__gte=forecast['min_temperature']
-                                           #  min_wind__lte=forecast['max_wind_speed'],
-                                           #  max_wind__gte=forecast['min_wind_speed'],
-                                           #  min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                           #  max_precipitation_chance__lte=forecast['min_precipitation_probability']
+        clothing = Clothing.objects.filter(
+                                            # user__in=[request.user, 0],
+                                            min_temp__lte=forecast['max_temperature'],
+                                            max_temp__gte=forecast['min_temperature'],
+                                            min_wind__lte=forecast['max_wind_speed'],
+                                            max_wind__gte=forecast['min_wind_speed'],
+                                            min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                            max_precipitation_chance__gte=forecast['min_precipitation_probability']
                                            ).values().order_by('name')
-
-        promotions = Promotions.objects.filter(user__in=[request.user, 0],
-                                               min_temp__lte=forecast['max_temperature'],
-                                               max_temp__gte=forecast['min_temperature']
-                                               #  min_wind__lte=forecast['max_wind_speed'],
-                                               #  max_wind__gte=forecast['min_wind_speed'],
-                                               #  min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                               #  max_precipitation_chance__lte=forecast['min_precipitation_probability']
-                                               ).values().order_by('name')
 
         plants = PlantCare.objects.filter(user__in=[request.user, 0],
                                           min_temp__lte=forecast['max_temperature'],
-                                          max_temp__gte=forecast['min_temperature']
-                                          #  min_wind__lte=forecast['max_wind_speed'],
-                                          #  max_wind__gte=forecast['min_wind_speed'],
-                                          #  min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                          #  max_precipitation_chance__lte=forecast['min_precipitation_probability']
+                                          max_temp__gte=forecast['min_temperature'],
+                                          min_wind__lte=forecast['max_wind_speed'],
+                                          max_wind__gte=forecast['min_wind_speed'],
+                                          min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                          max_precipitation_chance__gte=forecast['min_precipitation_probability']
                                           ).values().order_by('name')
     else:
         activities = Activity.objects.filter(user=0)
         clothing = Clothing.objects.filter(user=0)
-        promotions = Promotions.objects.filter(user=0)
         plants = PlantCare.objects.filter(user=0)
 
-    # activities_to_display = []
-    # for activity in activities:
-    #     # 50 needs to be replaced with the actual temp
-    #     if 50 in range(activity.min_temp, activity.max_temp):
-    #         activities_to_display.append(activity)
-    #     else:
-    #         print("didn't add activity: " + activity.name)
+    if weather_forecast:
+        print("{name}: {lat}, {long}".format(name=location_name, lat=lat, long=long))
 
-    context = {
-        'weather': weather_utils.get_weather_forecast_by_location_str(location),
-        'current': forecast,
-        'activities': activities,
-        'clothing': clothing,
-        'promotions': promotions,
-        'plants': plants
-    }
+        map_src = "//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&" \
+                  "zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light&" \
+                  "marker={longitude},{latitude}&center={longitude},{latitude}&level=10"\
+            .format(longitude=long, latitude=lat)
+
+        context = {
+            'location_name': location_name,
+            'weather': weather_forecast,
+            'activities': activities,
+            'clothing': clothing,
+            'plants': plants,
+            'map_src': map_src,
+            'activity_form': AddActivityForm()
+        }
+    else:
+        context = {
+            'location_name': "Forecast Unavailable for Location"
+        }
+
     return render(request, template_name, context)
 
 
@@ -119,6 +128,7 @@ def register(request):
     return render(request, template_name, context)
 
 
+@login_required
 def add_activity(request):
     template_name = 'weather/add_activity.html'
 
