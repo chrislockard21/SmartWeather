@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('register', views.register, name='register'),
     path('add_activity', views.add_activity, name='add_activity'),
+    path('add_plant_care', views.add_plant_care, name='add_plant_care'),
     
     # Build in URL's to handle login and logout. The login form and login
     # template are editible in the login template

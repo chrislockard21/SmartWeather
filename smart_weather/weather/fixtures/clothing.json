@@ -1,0 +1,38 @@
+[
+    { "model": "weather.Clothing",
+        "pk": 0,
+        "fields": {
+            "name": "Winter Coat",
+            "temp_value":  32,
+            "temp_condition":  "LT",
+            "wind_value":  -1,
+            "wind_condition":  "GT",
+            "precipitation_chance_value":  -1,
+            "precipitation_chance_condition": "GT"
+        }
+    },
+    { "model": "weather.Clothing",
+        "pk": 1,
+        "fields": {
+            "name": "Rain Jacket",
+            "temp_value":  -1,
+            "temp_condition":  "LT",
+            "wind_value":  -1,
+            "wind_condition":  "GT",
+            "precipitation_chance_value":  30,
+            "precipitation_chance_condition": "GT"
+        }
+    },
+    { "model": "weather.Clothing",
+        "pk": 2,
+        "fields": {
+            "name": "Wind Breaker",
+            "temp_value":  -1,
+            "temp_condition":  "LT",
+            "wind_value":  20,
+            "wind_condition":  "GT",
+            "precipitation_chance_value":  -1,
+            "precipitation_chance_condition": "GT"
+        }
+    }
+]

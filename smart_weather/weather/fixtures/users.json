@@ -1,9 +1,0 @@
-[
-    { "model": "auth.user",
-        "pk": 0,
-        "fields": {
-            "username": "_system_",
-            "password": "admin_pass"
-        }
-    }
-]
