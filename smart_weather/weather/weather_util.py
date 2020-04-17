@@ -313,8 +313,8 @@ class WeatherUtil:
                         'max_precipitation_probability': max_precip_prob,
                         'min_precipitation_probability': min_precip_prob,
                         'avg_precipitation_probability': avg_precip_prob,
-                        'max_wind': convert_kts_to_mph(max_wind, 0),
-                        'min_wind': convert_kts_to_mph(min_wind, 0)
+                        'max_wind_speed': convert_kts_to_mph(max_wind, 0),
+                        'min_wind_speed': convert_kts_to_mph(min_wind, 0)
                     })
 
             return hourly_forecast
@@ -343,8 +343,8 @@ class WeatherUtil:
         return self.get_weather_forecast_by_lat_long(location.latitude, location.longitude)
 
 
-weather_utils = WeatherUtil()
+# weather_utils = WeatherUtil()
 # weather_utils.get_weather_grid()
 # weather_utils.get_location("raliegh, nc")
 # print(weather_utils.get_weather_forecast_by_location_str("Raleigh"))
-print(weather_utils.get_weather_forecast_by_lat_long(35.7803977, -78.6390989))
+# print(weather_utils.get_weather_forecast_by_lat_long(35.7803977, -78.6390989))

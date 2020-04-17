@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.core import serializers
 from django.contrib.auth import login, authenticate, logout
 
-from .models import Activity
+from .models import Activity, Clothing, PlantCare
 from .weather_util import WeatherUtil, current_location
 from .forms import RegisterForm, AddActivityForm
 from django.contrib.auth.decorators import login_required
@@ -18,12 +18,6 @@ def index(request):
     template_name = 'weather/index.html'
 
     weather_utils = WeatherUtil()
-    if not request.user.is_anonymous:
-        activities = Activity.objects.filter(user__in=[request.user, 0])
-    else:
-        activities = Activity.objects.filter(user=0)
-
-    activity_form = AddActivityForm()
 
     loc_text = request.GET.get('loc_text')
     if not loc_text:
@@ -38,6 +32,40 @@ def index(request):
         location_name = location.address
 
     weather_forecast = weather_utils.get_weather_forecast_by_lat_long(lat, long)
+    forecast = weather_forecast['daily_forecast'][0]
+
+    if not request.user.is_anonymous:
+        activities = Activity.objects.filter(user__in=[request.user, 0],
+                                             min_temp__lte=forecast['max_temperature'],
+                                             max_temp__gte=forecast['min_temperature'],
+                                             min_wind__lte=forecast['max_wind_speed'],
+                                             max_wind__gte=forecast['min_wind_speed'],
+                                             min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                             max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                             ).values().order_by('name')
+
+        clothing = Clothing.objects.filter(
+                                            # user__in=[request.user, 0],
+                                            min_temp__lte=forecast['max_temperature'],
+                                            max_temp__gte=forecast['min_temperature'],
+                                            min_wind__lte=forecast['max_wind_speed'],
+                                            max_wind__gte=forecast['min_wind_speed'],
+                                            min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                            max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                           ).values().order_by('name')
+
+        plants = PlantCare.objects.filter(user__in=[request.user, 0],
+                                          min_temp__lte=forecast['max_temperature'],
+                                          max_temp__gte=forecast['min_temperature'],
+                                          min_wind__lte=forecast['max_wind_speed'],
+                                          max_wind__gte=forecast['min_wind_speed'],
+                                          min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                          max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                          ).values().order_by('name')
+    else:
+        activities = Activity.objects.filter(user=0)
+        clothing = Clothing.objects.filter(user=0)
+        plants = PlantCare.objects.filter(user=0)
 
     if weather_forecast:
         print("{name}: {lat}, {long}".format(name=location_name, lat=lat, long=long))
@@ -51,8 +79,10 @@ def index(request):
             'location_name': location_name,
             'weather': weather_forecast,
             'activities': activities,
+            'clothing': clothing,
+            'plants': plants,
             'map_src': map_src,
-            'activity_form': activity_form
+            'activity_form': AddActivityForm()
         }
     else:
         context = {
