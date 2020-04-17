@@ -82,41 +82,64 @@
         </div>
     </div>
     <div class="item3 card">
-        <div class="card-body">
-            <h5 class="card-title">POSSIBLE ACTIVITIES</h5>
-            {% if activities %}
-                {% for activity in activities %}
-                    <p class="card-text">{{activity.name}}</p>
-                {% endfor %}
-            {% else %}
-                <p class="card-text">No Recommended Activities</p>
-            {% endif %}
-        </div>
-        <div class="card-footer">
-            <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#activityModal">
-                Add Activity
-            </button>
-        </div>
+    <div class="card-body">
+        <h5 class="card-title">POSSIBLE ACTIVITIES</h5>
+        {% if activities %}
+            {% for activity in activities %}
+                <p class="card-text">{{activity.name}}</p>
+            {% endfor %}
+        {% else %}
+            <p class="card-text">No Recommended Activities</p>
+        {% endif %}
     </div>
+
+    <div class="card-footer">
+        <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#activityModal">
+            Add Activity
+        </button>
+    </div>
+</div>
     <div class="item4 card">
         <div class="card-body">
             <h5 class="card-title">PRODUCT RECOMMENDATIONS</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
+            {% if promotions %}
+                {% for promotion in promotions %}
+                    <p class="card-text">{{promotion.name}} - {{promotion.business_name}}</p>
+                {% endfor %}
+            {% else %}
+                <p class="card-text">No Recommended Promotions</p>
+            {% endif %}
         </div>
     </div>
     <div class="item5 card">
         <div class="card-body">
             <h5 class="card-title">CLOTHING RECOMMENDATIONS</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
+            {% if clothing %}
+                {% for clothes in clothing %}
+                    <p class="card-text">{{clothes.name}}</p>
+                {% endfor %}
+            {% else %}
+                <p class="card-text">No Recommendations</p>
+            {% endif %}
         </div>
     </div>
     <div class="item6 card">
         <div class="card-body">
             <h5 class="card-title">PLANT CARE RECOMMENDATIONS</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
+            {% if weather.current_temp %}
+                {% if weather.current_temp < 35 %}
+                    Frost possible
+                {% elif weather.current_temp > 100 %}
+                    Extreme heat
+                {% endif %}
+            {% endif %}
+            {% if plants %}
+                {% for plant in plants %}
+                    <p class="card-text">{{plant.name}}</p>
+                {% endfor %}
+            {% else %}
+                <p class="card-text">No Suggested Plant Care</p>
+            {% endif %}
         </div>
         <div class="card-footer">
             <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#plantModal">
