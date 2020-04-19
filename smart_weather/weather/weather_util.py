@@ -167,9 +167,11 @@ class WeatherUtil:
                 hour = temp.get("hour")
                 precipitation_probability = precipitation_probabilities[date + "_" + str(hour)]
                 wind_speed = wind_speeds[date + "_" + str(hour)]
+                standard_time = datetime.strptime(str(hour) + ':00', '%H:%M').strftime('%I:%M %p')
                 hourly_forecast.append({
                     'date': date,
                     'hour': hour,
+                    'standard_time': standard_time,
                     'temperature': convert_c_to_f(temp.get("value"), 0),
                     'precipitation_probability': precipitation_probability.get("value"),
                     'wind_speed': round(wind_speed.get("value"), 2)
@@ -205,11 +207,20 @@ class WeatherUtil:
             return hourly_forecast
 
         hourly = get_hourly_forecast(weather)
+
+        weather_image = ''
+        if hourly[0]['hour'] > 18:
+            weather_image = 'night'
+        elif hourly[0]['precipitation_probability'] > 50:
+            weather_image = 'rain'
+        else:
+            weather_image = 'sun'
+
         weather_forecast = {
             'hourly_forecast': hourly,
             'daily_forecast': get_daily_forecast(weather),
-            'current_temp': hourly[0]['temperature']
-
+            'current_temp': hourly[0]['temperature'],
+            'weather_image': weather_image
         }
         return weather_forecast
 
