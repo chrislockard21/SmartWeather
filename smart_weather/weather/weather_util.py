@@ -239,12 +239,19 @@ class WeatherUtil:
             cwa = grid.get("properties").get("cwa")
             grid_x = grid.get("properties").get("gridX")
             grid_y = grid.get("properties").get("gridY")
-            print("latitude({0}), longitude({1}), cwa({2}), gridx({3}), gridy({4})"
-                  .format(lat, long, str(cwa), str(grid_x), str(grid_y)))
+            forecast_zone = str(grid.get("properties").get("forecastZone"))
+            zone_id = forecast_zone.split("/")[-1]
+            print("latitude({0}), longitude({1}), cwa({2}), gridx({3}), gridy({4}), zoneID({5})"
+                  .format(lat, long, str(cwa), str(grid_x), str(grid_y), str(zone_id)))
 
-            url = self.base_url + "gridpoints/" + str(cwa) + "/" + str(grid_x) + "," + str(grid_y)
-            res = requests.get(url, headers=self.request_header)
-            return res
+            weather_url = self.base_url + "gridpoints/" + str(cwa) + "/" + str(grid_x) + "," + str(grid_y)
+            weather_forecast = requests.get(weather_url, headers=self.request_header)
+            alerts_url = self.base_url + "alerts/active/zone/" + str(zone_id)
+            alerts = requests.get(alerts_url, headers=self.request_header)
+            return {
+                "weather_forecast": weather_forecast.text,
+                "alerts": alerts.text
+            }
         except:
             return None
 
@@ -256,8 +263,8 @@ class WeatherUtil:
         weather = self.get_weather_by_lat_long(lat, long)
         # print(weather.text)
 
-        def get_hourly_forecast(weather_json_str):
-            weather_props = json.loads(weather_json_str.text)["properties"]
+        def get_hourly_forecast(weather_json_str, start_hour):
+            weather_props = json.loads(weather_json_str)["properties"]
             hourly_temps = normalize_time_and_values(weather_props["temperature"], True)
             precipitation_probabilities = normalize_time_and_values(weather_props["probabilityOfPrecipitation"], False)
             wind_speeds = normalize_time_and_values(weather_props["windSpeed"], False)
@@ -268,25 +275,27 @@ class WeatherUtil:
                 _date = temp.get("date")
                 hour = temp.get("hour")
 
-                precipitation_probability = precipitation_probabilities[_date + "_" + str(hour)]
-                wind_speed = wind_speeds[_date + "_" + str(hour)]
-                standard_time = datetime.strptime(str(hour) + ':00', '%H:%M').strftime('%I:%M %p')
+                # Condition used to start the hourly forecast from the current hour
+                if count != 0 or start_hour == hour:
+                    precipitation_probability = precipitation_probabilities[_date + "_" + str(hour)]
+                    wind_speed = wind_speeds[_date + "_" + str(hour)]
+                    standard_time = datetime.strptime(str(hour) + ':00', '%H:%M').strftime('%I:%M %p')
 
-                hourly_forecast.append({
-                    'date': _date,
-                    'hour': hour,
-                    'standard_time': standard_time,
-                    'temperature': convert_c_to_f(temp.get("value"), 0),
-                    'precipitation_probability': precipitation_probability.get("value"),
-                    'wind_speed': convert_kts_to_mph(wind_speed.get("value"), 0)
-                })
-                count += 1
-                if count == 24:
-                    break
+                    hourly_forecast.append({
+                        'date': _date,
+                        'hour': hour,
+                        'standard_time': standard_time,
+                        'temperature': convert_c_to_f(temp.get("value"), 0),
+                        'precipitation_probability': precipitation_probability.get("value"),
+                        'wind_speed': convert_kts_to_mph(wind_speed.get("value"), 0)
+                    })
+                    count += 1
+                    if count == 24:
+                        break
             return hourly_forecast
 
         def get_daily_forecast(weather_json_str):
-            weather_props = json.loads(weather_json_str.text)["properties"]
+            weather_props = json.loads(weather_json_str)["properties"]
             max_temps = get_max_min_temp_values(weather_props["maxTemperature"], True)
             min_temps = get_max_min_temp_values(weather_props["minTemperature"], False)
             precip_prob_vals = get_daily_values(weather_props["probabilityOfPrecipitation"], False)
@@ -323,11 +332,23 @@ class WeatherUtil:
 
             return hourly_forecast
 
-        hourly = get_hourly_forecast(weather)
+        def get_alerts(alerts_json_str):
+            # print("alerts: " + alerts_json_str)
+            alerts = []
+            alerts_features = json.loads(alerts_json_str)["features"]
+            for alerts_feature in alerts_features:
+                alert_props = alerts_feature["properties"]
+                alerts.append({
+                    'event': alert_props["event"],
+                    'headline': alert_props["headline"],
+                    'severity': alert_props["severity"],
+                    'description': alert_props["description"]
+                })
+            return alerts
 
         try:
-            hourly = get_hourly_forecast(weather)
             cur_hour = datetime.now().hour
+            hourly = get_hourly_forecast(weather["weather_forecast"], cur_hour)
             cur_hour_forecast = hourly[0]
             for _hour in hourly:
                 if _hour['hour'] == cur_hour:
@@ -343,11 +364,12 @@ class WeatherUtil:
 
             weather_forecast = {
                 'hourly_forecast': hourly,
-                'daily_forecast': get_daily_forecast(weather),
+                'daily_forecast': get_daily_forecast(weather["weather_forecast"]),
                 'current_temp': cur_hour_forecast['temperature'],
                 'current_wind_speed': cur_hour_forecast['wind_speed'],
                 'current_precipitation_probability': cur_hour_forecast['precipitation_probability'],
-                'weather_image': weather_image
+                'weather_image': weather_image,
+                'alerts': get_alerts(weather["alerts"])
             }
             return weather_forecast
         except Exception as e:
@@ -362,5 +384,5 @@ class WeatherUtil:
 # weather_utils = WeatherUtil()
 # weather_utils.get_weather_grid()
 # weather_utils.get_location("raliegh, nc")
-# print(weather_utils.get_weather_forecast_by_location_str("Raleigh"))
+# print(weather_utils.get_weather_forecast_by_location_str("Kenosha"))
 # print(weather_utils.get_weather_forecast_by_lat_long(35.7803977, -78.6390989))
