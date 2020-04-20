@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import MinLengthValidator
-from .models import Activity
+from .models import Activity, PlantCare
 
 
 class RegisterForm(UserCreationForm):
@@ -36,7 +36,8 @@ class AddActivityForm(forms.ModelForm):
     max_temp = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     min_wind = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
     max_wind = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
-    # precipitation_chance_max = forms.IntegerField(widget=forms.IntegerField(attrs={'class': 'form-control'}))
+    min_precipitation_chance = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    max_precipitation_chance = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
     class Meta:
         model = Activity
@@ -45,4 +46,46 @@ class AddActivityForm(forms.ModelForm):
             'description',
             'min_temp',
             'max_temp',
+            'min_wind',
+            'max_wind',
+            'min_precipitation_chance',
+            'max_precipitation_chance'
+        )
+
+
+class AddPlantCareForm(forms.ModelForm):
+    name = forms.CharField(label="Name:",
+                           widget=forms.TextInput(attrs={'class': 'form-control'}))
+    action = forms.CharField(label="Action to Take:",
+                             widget=forms.Textarea(attrs={'class': 'form-control'}))
+    temp_condition = forms.CharField(label="Temperature Condition:",
+                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES,
+                                                         attrs={'class': 'form-control'}))
+    temp_value = forms.IntegerField(label="Temperature Value:",
+                                    required=False,
+                                    widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    wind_condition = forms.CharField(label="Wind Condition:",
+                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES,
+                                                         attrs={'class': 'form-control'}))
+    wind_value = forms.IntegerField(label="Wind Value:",
+                                    required=False,
+                                    widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    precipitation_chance_condition = forms.CharField(label="Precipitation Chance Condition:",
+                                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES,
+                                                                         attrs={'class': 'form-control'}))
+    precipitation_chance_value = forms.IntegerField(label="Precipitation Chance Value:",
+                                                    required=False,
+                                                    widget=forms.NumberInput(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = PlantCare
+        fields = (
+            'name',
+            'action',
+            'temp_value',
+            'temp_condition',
+            'wind_value',
+            'wind_condition',
+            'precipitation_chance_value',
+            'precipitation_chance_condition'
         )

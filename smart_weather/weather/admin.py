@@ -5,3 +5,6 @@ from . import models
 # admin.site.register(models.Foo)
 
 admin.site.register(models.Activity)
+admin.site.register(models.Clothing)
+admin.site.register(models.PlantCare)
+admin.site.register(models.Promotions)

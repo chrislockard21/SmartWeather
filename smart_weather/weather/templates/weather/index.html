@@ -21,11 +21,11 @@
 <div class="grid-container">
     <div class="item1">
         <div>
-            <h5>Current Location: <span id="location"></span></h5>
+            <h5>{{location_name}} <span id="location"></span></h5>
         </div>
         <div class="zipInput d-flex w-50 p-3">
-            <input class="form-control" id="enterZip" placeholder="Enter zipcode"/>
-            <button id="submitZip" class="btn btn-primary" onclick="getWeatherLocationByZip()">Submit</button>
+            <input class="form-control" id="loc_text" placeholder="Enter zipcode"/>
+            <a id="submitZip" class="btn btn-primary" href="" onclick="this.href='{% url 'weather:index' %}?loc_text='+document.getElementById('loc_text').value">Submit</a>
             <br/>
         </div>
     </div>
@@ -98,6 +98,7 @@
                 <p class="card-text">No Recommended Activities</p>
             {% endif %}
         </div>
+
         <div class="card-footer">
             <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#activityModal">
                 Add Activity
@@ -107,23 +108,41 @@
     <div class="item5 card">
         <div class="card-body">
             <h5 class="card-title">CLOTHING RECOMMENDATIONS</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
+            {% if clothing %}
+                {% for clothes in clothing %}
+                    <p class="card-text">{{clothes.name}}</p>
+                {% endfor %}
+            {% else %}
+                <p class="card-text">No Recommendations</p>
+            {% endif %}
         </div>
     </div>
     <div class="item6 card">
         <div class="card-body">
             <h5 class="card-title">PLANT CARE RECOMMENDATIONS</h5>
-            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                content.</p>
+            {% if plants %}
+                {% for plant in plants %}
+                    <p class="card-text">{{plant.name}}: {{plant.action}}</p>
+                {% endfor %}
+            {% else %}
+                <p class="card-text">No Plant Care Recommendations</p>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <button type="button" class="btn btn-sm btn-link" data-toggle="modal" data-target="#plantModal">
+                Add Plant Care Instruction
+            </button>
         </div>
     </div>
     <div class="item7 card">
         <div class="embed-container">
+            {% if map_src %}
             <iframe width="100%" height="200" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
                     title="Smart Weather" id="map"
-                    src="//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light">
+                    src={{map_src}}>
+<!--                    src="//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light">-->
             </iframe>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -144,6 +163,31 @@
                 <div class="modal-body">
                     {% csrf_token %}
                     {{ activity_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Plant Modal -->
+<div class="modal fade" id="plantModal" tabindex="-1" role="dialog" aria-labelledby="plantModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="plantModalLabel">Edit Plants</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'weather:add_plant_care' %}" method="post">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ plant_care_form.as_p }}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

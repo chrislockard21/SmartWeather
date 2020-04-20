@@ -2,33 +2,94 @@ from django.shortcuts import render, redirect
 from django.core import serializers
 from django.contrib.auth import login, authenticate, logout
 
-from .models import Activity
-from .weather_util import WeatherUtil
-from .forms import RegisterForm, AddActivityForm
+from .models import Activity, Clothing, PlantCare
+from .weather_util import WeatherUtil, current_location
+from .forms import RegisterForm, AddActivityForm, AddPlantCareForm
 from django.contrib.auth.decorators import login_required
+
+import json
 
 
 # Create your views here.
 
 def index(request):
-    print('index')
+    print('index: ' + str(request))
+    print('User:  ' + str(request.user))
     template_name = 'weather/index.html'
+
     weather_utils = WeatherUtil()
-    print('User -> ' + str(request.user))
+
+    loc_text = request.GET.get('loc_text')
+    if not loc_text:
+        location = current_location()
+        lat = location['latitude']
+        long = location['longitude']
+        location_name = "{city}, {state}".format(city=location['city'], state=location['region_name'])
+    else:
+        location = weather_utils.get_location(loc_text)
+        lat = location.latitude
+        long = location.longitude
+        location_name = location.address
+
+    weather_forecast = weather_utils.get_weather_forecast_by_lat_long(lat, long)
+    forecast = weather_forecast['daily_forecast'][0]
+
     if not request.user.is_anonymous:
-        activities = Activity.objects.filter(user__in=[request.user, 0])
+        activities = Activity.objects.filter(user__in=[request.user, 0],
+                                             min_temp__lte=forecast['max_temperature'],
+                                             max_temp__gte=forecast['min_temperature'],
+                                             min_wind__lte=forecast['max_wind_speed'],
+                                             max_wind__gte=forecast['min_wind_speed'],
+                                             min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                             max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                             ).values().order_by('name')
+
+        clothing = Clothing.objects.filter(
+                                            # user__in=[request.user, 0],
+                                            # min_temp__lte=forecast['max_temperature'],
+                                            # max_temp__gte=forecast['min_temperature'],
+                                            # min_wind__lte=forecast['max_wind_speed'],
+                                            # max_wind__gte=forecast['min_wind_speed'],
+                                            # min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                            # max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                           ).values().order_by('name')
+
+        plants = PlantCare.objects.filter(user__in=[request.user, 0],
+                                          # min_temp__lte=forecast['max_temperature'],
+                                          # max_temp__gte=forecast['min_temperature'],
+                                          # min_wind__lte=forecast['max_wind_speed'],
+                                          # max_wind__gte=forecast['min_wind_speed'],
+                                          # min_precipitation_chance__lte=forecast['max_precipitation_probability'],
+                                          # max_precipitation_chance__gte=forecast['min_precipitation_probability']
+                                          ).values().order_by('name')
     else:
         activities = Activity.objects.filter(user=0)
+        clothing = Clothing.objects.filter()
+        plants = PlantCare.objects.filter(user=0)
 
-    activity_form = AddActivityForm()
-    # activities = Activity.objects.values()
-    # activities_list = list(activities.values())
-    # print("Activities: " + str(activities_list))
-    context = {
-        'weather': weather_utils.get_weather_forecast_by_location_str("Raleigh"),
-        'activities': activities,
-        'activity_form': activity_form,
-    }
+    if weather_forecast:
+        print("{name}: {lat}, {long}".format(name=location_name, lat=lat, long=long))
+
+        map_src = "//cobra.maps.arcgis.com/apps/Embed/index.html?webmap=c4fcd13aa52e4dcfb24cc6e90a970a59&" \
+                  "zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light&" \
+                  "marker={longitude},{latitude}&center={longitude},{latitude}&level=10"\
+            .format(longitude=long, latitude=lat)
+
+        context = {
+            'location_name': location_name,
+            'weather': weather_forecast,
+            'activities': activities,
+            'clothing': clothing,
+            'plants': plants,
+            'map_src': map_src,
+            'activity_form': AddActivityForm(),
+            'plant_care_form': AddPlantCareForm()
+        }
+    else:
+        context = {
+            'location_name': "Forecast Unavailable for Location"
+        }
+
     return render(request, template_name, context)
 
 
@@ -88,6 +149,33 @@ def add_activity(request):
     else:
         print("activity::GET")
         form = AddActivityForm(None)
+
+    context = {
+        'form': form
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def add_plant_care(request):
+    template_name = 'weather/add_plant_care.html'
+
+    if request.method == 'POST':
+        print("activity::POST")
+        form = AddPlantCareForm(request.POST)
+        if form.is_valid():
+            # Holds off on writing to the database
+            plant_care = form.save(commit=False)
+
+            # Sets the user for the activity
+            plant_care.user = request.user
+            plant_care.save()
+
+            # Redirects the user to the index
+            return redirect('weather:index')
+    else:
+        print("activity::GET")
+        form = AddPlantCareForm(None)
 
     context = {
         'form': form
