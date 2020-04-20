@@ -59,17 +59,20 @@ class AddPlantCareForm(forms.ModelForm):
     action = forms.CharField(label="Action to Take:",
                              widget=forms.Textarea(attrs={'class': 'form-control'}))
     temp_condition = forms.CharField(label="Temperature Condition:",
-                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES))
+                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES,
+                                                         attrs={'class': 'form-control'}))
     temp_value = forms.IntegerField(label="Temperature Value:",
                                     required=False,
                                     widget=forms.NumberInput(attrs={'class': 'form-control'}))
     wind_condition = forms.CharField(label="Wind Condition:",
-                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES))
+                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES,
+                                                         attrs={'class': 'form-control'}))
     wind_value = forms.IntegerField(label="Wind Value:",
                                     required=False,
                                     widget=forms.NumberInput(attrs={'class': 'form-control'}))
     precipitation_chance_condition = forms.CharField(label="Precipitation Chance Condition:",
-                                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES))
+                                                     widget=forms.Select(choices=PlantCare.CONDITION_CHOICES,
+                                                                         attrs={'class': 'form-control'}))
     precipitation_chance_value = forms.IntegerField(label="Precipitation Chance Value:",
                                                     required=False,
                                                     widget=forms.NumberInput(attrs={'class': 'form-control'}))

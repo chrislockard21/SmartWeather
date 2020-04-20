@@ -12,7 +12,6 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'weather:login' %}">Login</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'weather:register' %}">Register</a></li>
             {% else %}
-            <li class="nav-item"><a class="nav-link" href="{% url 'weather:add_activity' %}">Add Activity</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'weather:logout' %}">Logout</a></li>
             {% endif %}
         </ul>
@@ -25,7 +24,7 @@
             <h5>{{location_name}} <span id="location"></span></h5>
         </div>
         <div class="zipInput d-flex w-50 p-3">
-            <input class="form-control" id="loc_text"/>
+            <input class="form-control" id="loc_text" placeholder="Enter zipcode"/>
             <a id="submitZip" class="btn btn-primary" href="" onclick="this.href='{% url 'weather:index' %}?loc_text='+document.getElementById('loc_text').value">Submit</a>
             <br/>
         </div>
@@ -34,8 +33,16 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-sm-6 text-center">
+                    {% if weather.weather_image == "rain" %}
                     <img class="mainIcon"
-                         src="../../static/weather/images/weather_icons/iconfinder_weather_cloud_cloudy_sun.png">
+                         src="../../static/weather/images/weather_icons/iconfinder_weather_rain_rainy_heavy_cloud.png">
+                    {% elif weather.weather_image == "night" %}
+                    <img class="mainIcon"
+                         src="../../static/weather/images/weather_icons/iconfinder_weather_crescent_half_moon_night.png">
+                    {% else %}
+                    <img class="mainIcon"
+                         src="../../static/weather/images/weather_icons/iconfinder_weather_sun_sunny_cloud.png">
+                    {% endif %}
                     <h1 style="font-size: 3.5rem">{{weather.current_temp}} &#730;F</h1>
                 </div>
                 <div class="col-sm-6 text-center">
@@ -49,7 +56,6 @@
                             <td>L: {{val.min_temperature}} &#730;F</td>
                         </tr>
                         {% endfor %}
-                        <!--            <p>Weather: {{weather}}</p>-->
                     </table>
                     {% else %}
                     <h5>No Daily Forecast Available</h5>>
@@ -66,7 +72,7 @@
                                 {% for val in weather.hourly_forecast %}
                                 <td class="px-2" style="min-width: 100px">
                                     <strong>{{val.temperature}} &#730;F</strong><br/>
-                                    {{val.hour}}<br/>
+                                    {{val.standard_time}}<br/>
                                     &#127783; {{val.precipitation_probability}}%<br/>
                                     &#x1F32B; {{val.wind_speed}}
                                 </td>
@@ -99,18 +105,6 @@
             </button>
         </div>
     </div>
-<!--    <div class="item4 card">-->
-<!--        <div class="card-body">-->
-<!--            <h5 class="card-title">PRODUCT RECOMMENDATIONS</h5>-->
-<!--            {% if promotions %}-->
-<!--                {% for promotion in promotions %}-->
-<!--                    <p class="card-text">{{promotion.name}} - {{promotion.business_name}}</p>-->
-<!--                {% endfor %}-->
-<!--            {% else %}-->
-<!--                <p class="card-text">No Recommended Promotions</p>-->
-<!--            {% endif %}-->
-<!--        </div>-->
-<!--    </div>-->
     <div class="item5 card">
         <div class="card-body">
             <h5 class="card-title">CLOTHING RECOMMENDATIONS</h5>

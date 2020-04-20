@@ -35,10 +35,6 @@ body {
     grid-area: activites;
 }
 
-.item4 {
-    grid-area: products;
-}
-
 .item5 {
     grid-area: clothing;
 }
@@ -54,7 +50,7 @@ body {
 .grid-container {
     display: grid;
     grid-template-columns: 50% auto;
-    grid-template-areas: 'location location' 'weather activites' 'weather products' 'map clothing' 'map plants';
+    grid-template-areas: 'location location' 'weather activites' 'map clothing' 'map plants';
     grid-gap: 10px;
     padding: 10px;
 }

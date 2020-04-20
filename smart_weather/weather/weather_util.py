@@ -267,11 +267,15 @@ class WeatherUtil:
             for temp in hourly_temps:
                 _date = temp.get("date")
                 hour = temp.get("hour")
+
                 precipitation_probability = precipitation_probabilities[_date + "_" + str(hour)]
                 wind_speed = wind_speeds[_date + "_" + str(hour)]
+                standard_time = datetime.strptime(str(hour) + ':00', '%H:%M').strftime('%I:%M %p')
+
                 hourly_forecast.append({
                     'date': _date,
                     'hour': hour,
+                    'standard_time': standard_time,
                     'temperature': convert_c_to_f(temp.get("value"), 0),
                     'precipitation_probability': precipitation_probability.get("value"),
                     'wind_speed': convert_kts_to_mph(wind_speed.get("value"), 0)
@@ -319,6 +323,8 @@ class WeatherUtil:
 
             return hourly_forecast
 
+        hourly = get_hourly_forecast(weather)
+
         try:
             hourly = get_hourly_forecast(weather)
             cur_hour = datetime.now().hour
@@ -326,12 +332,22 @@ class WeatherUtil:
             for _hour in hourly:
                 if _hour['hour'] == cur_hour:
                     cur_hour_forecast = _hour
+
+            weather_image = ''
+            if cur_hour > 18:
+                weather_image = 'night'
+            elif cur_hour_forecast['precipitation_probability'] > 50:
+                weather_image = 'rain'
+            else:
+                weather_image = 'sun'
+
             weather_forecast = {
                 'hourly_forecast': hourly,
                 'daily_forecast': get_daily_forecast(weather),
                 'current_temp': cur_hour_forecast['temperature'],
                 'current_wind_speed': cur_hour_forecast['wind_speed'],
-                'current_precipitation_probability': cur_hour_forecast['precipitation_probability']
+                'current_precipitation_probability': cur_hour_forecast['precipitation_probability'],
+                'weather_image': weather_image
             }
             return weather_forecast
         except Exception as e:
