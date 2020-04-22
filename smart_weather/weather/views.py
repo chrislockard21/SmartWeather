@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core import serializers
 from django.contrib.auth import login, authenticate, logout
+from django.db.models import Q
 
 from .models import Activity, Clothing, PlantCare
 from .weather_util import WeatherUtil, current_location
@@ -44,24 +45,44 @@ def index(request):
                                              max_precipitation_chance__gte=forecast['min_precipitation_probability']
                                              ).values().order_by('name')
 
-        clothing = Clothing.objects.filter(
-                                            # user__in=[request.user, 0],
-                                            # min_temp__lte=forecast['max_temperature'],
-                                            # max_temp__gte=forecast['min_temperature'],
-                                            # min_wind__lte=forecast['max_wind_speed'],
-                                            # max_wind__gte=forecast['min_wind_speed'],
-                                            # min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                            # max_precipitation_chance__gte=forecast['min_precipitation_probability']
-                                           ).values().order_by('name')
+        clothing = Clothing.objects.raw('SELECT * ' +
+                                        'FROM weather_clothing ' +
+                                        'WHERE (temp_value IS NULL OR ' +
+                                        '(( temp_value IS NOT NULL AND temp_condition = "GT" AND temp_value <= %s ) OR ' +
+                                        '( temp_value IS NOT NULL AND temp_condition = "LT" AND temp_value >= %s ))) ' +
 
-        plants = PlantCare.objects.filter(user__in=[request.user, 0],
-                                          # min_temp__lte=forecast['max_temperature'],
-                                          # max_temp__gte=forecast['min_temperature'],
-                                          # min_wind__lte=forecast['max_wind_speed'],
-                                          # max_wind__gte=forecast['min_wind_speed'],
-                                          # min_precipitation_chance__lte=forecast['max_precipitation_probability'],
-                                          # max_precipitation_chance__gte=forecast['min_precipitation_probability']
-                                          ).values().order_by('name')
+                                        'AND (wind_value IS NULL OR ' +
+                                        '(( wind_value IS NOT NULL AND wind_condition = "GT" AND wind_value <= %s ) OR ' +
+                                        '( wind_value IS NOT NULL AND wind_condition = "LT" AND wind_value >= %s )))' +
+
+                                        'AND (precipitation_chance_value IS NULL OR ' +
+                                        '(( precipitation_chance_value IS NOT NULL AND precipitation_chance_condition = "GT" AND precipitation_chance_value <= %s ) OR ' +
+                                        '( precipitation_chance_value IS NOT NULL AND precipitation_chance_condition = "LT" AND precipitation_chance_value >= %s ))) ' +
+                                        'ORDER BY name',
+                                        [weather_forecast['current_temp'], weather_forecast['current_temp'],
+                                         weather_forecast['current_wind_speed'], weather_forecast['current_wind_speed'],
+                                         weather_forecast['current_precipitation_probability'], weather_forecast['current_precipitation_probability']])
+
+        # plants = PlantCare.objects.filter(user__in=[request.user, 0]).extra(where=["SELECT * FROM weather_plantcare"])
+        plants = PlantCare.objects.raw('SELECT * ' +
+                                        'FROM weather_plantcare ' +
+                                        'WHERE (temp_value IS NULL OR ' +
+                                        '(( temp_value IS NOT NULL AND temp_condition = "GT" AND temp_value <= %s ) OR ' +
+                                        '( temp_value IS NOT NULL AND temp_condition = "LT" AND temp_value >= %s ))) ' +
+
+                                        'AND (wind_value IS NULL OR ' +
+                                        '(( wind_value IS NOT NULL AND wind_condition = "GT" AND wind_value <= %s ) OR ' +
+                                        '( wind_value IS NOT NULL AND wind_condition = "LT" AND wind_value >= %s )))' +
+
+                                        'AND (precipitation_chance_value IS NULL OR ' +
+                                        '(( precipitation_chance_value IS NOT NULL AND precipitation_chance_condition = "GT" AND precipitation_chance_value <= %s ) OR ' +
+                                        '( precipitation_chance_value IS NOT NULL AND precipitation_chance_condition = "LT" AND precipitation_chance_value >= %s ))) ' +
+                                      #  'AND user = %s ' +       #this would have the user filter
+                                        'ORDER BY name',
+                                        [weather_forecast['current_temp'], weather_forecast['current_temp'],
+                                         weather_forecast['current_wind_speed'], weather_forecast['current_wind_speed'],
+                                         weather_forecast['current_precipitation_probability'], weather_forecast['current_precipitation_probability']])
+                                      #  str(request.user)])   #this would have the user parameter
     else:
         activities = Activity.objects.filter(user=0)
         clothing = Clothing.objects.filter()
