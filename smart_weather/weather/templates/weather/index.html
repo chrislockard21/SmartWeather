@@ -18,6 +18,15 @@
     </div>
 </nav>
 {% if user.is_authenticated %}
+{% if weather.alerts %}
+<div class="alert-container scroll-left">
+    <p>
+        {% for alert in weather.alerts %}
+        <strong>{{alert.headline}}</strong>: {{alert.description}}.&nbsp;&nbsp;&nbsp;
+        {% endfor %}
+    </p>
+</div>
+{% endif %}
 <div class="grid-container">
     <div class="item1">
         <div>
@@ -29,7 +38,7 @@
                   <path fill-rule="evenodd" d="M14.082 2.182a.5.5 0 01.103.557L8.528 15.467a.5.5 0 01-.917-.007L5.57 10.694.803 8.652a.5.5 0 01-.006-.916l12.728-5.657a.5.5 0 01.556.103z" clip-rule="evenodd"/>
                 </svg>
             </a>&nbsp;
-            <input class="form-control" id="loc_text" placeholder="Enter zipcode"/>
+            <input class="form-control" id="loc_text" placeholder="Enter location..."/>
             <a id="submitZip" class="btn btn-primary" href="" onclick="this.href='{% url 'weather:index' %}?loc_text='+document.getElementById('loc_text').value">Submit</a>
             <br/>
         </div>

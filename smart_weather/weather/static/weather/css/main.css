@@ -101,3 +101,54 @@ small {
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 }
+
+.alert-container {
+    background-color: #cc3300;
+    color: white;
+    padding: 5px;
+}
+
+.scroll-left {
+    height: 35px;
+    overflow: hidden;
+    position: relative;
+}
+
+.scroll-left p {
+    position: absolute;
+    margin: 0;
+    white-space: nowrap;
+    text-align: right;
+    /* Starting position */
+    -moz-transform:translateX(15%);
+    -webkit-transform:translateX(15%);
+    transform:translateX(15%);
+    /* Apply animation to this element */
+    -moz-animation: scroll-left 50s linear infinite;
+    -webkit-animation: scroll-left 50s linear infinite;
+    animation: scroll-left 50s linear infinite;
+}
+
+/* Move it (define the animation) */
+@-moz-keyframes scroll-left {
+    0%   { -moz-transform: translateX(15%); }
+    100% { -moz-transform: translateX(-15%); }
+}
+
+@-webkit-keyframes scroll-left {
+    0%   { -webkit-transform: translateX(15%); }
+    100% { -webkit-transform: translateX(-15%); }
+}
+
+@keyframes scroll-left {
+    0%   {
+        -moz-transform: translateX(15%); /* Browser bug fix */
+        -webkit-transform: translateX(15%); /* Browser bug fix */
+        transform: translateX(15%);
+    }
+    100% {
+        -moz-transform: translateX(-15%); /* Browser bug fix */
+        -webkit-transform: translateX(-15%); /* Browser bug fix */
+        transform: translateX(-15%);
+    }
+}
