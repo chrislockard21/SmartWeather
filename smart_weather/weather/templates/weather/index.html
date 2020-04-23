@@ -124,7 +124,7 @@
             <h5 class="card-title">CLOTHING RECOMMENDATIONS</h5>
             {% if clothing %}
                 {% for clothes in clothing %}
-                    <p class="card-text">{{clothes.name}} - Temp {{clothes.temp_condition}} {{clothes.temp_value}}, Wind {{clothes.wind_condition}} {{clothes.wind_value}}, Rain {{clothes.precipitation_chance_condition}} {{clothes.precipitation_chance_value}}</p>
+                    <p class="card-text">{{clothes.name}}</p>
                 {% endfor %}
             {% else %}
                 <p class="card-text">No Recommendations</p>
@@ -136,7 +136,7 @@
             <h5 class="card-title">PLANT CARE RECOMMENDATIONS</h5>
             {% if plants %}
                 {% for plant in plants %}
-                    <p class="card-text">{{plant.name}}: {{plant.action}} - Temp {{plant.temp_condition}} {{plant.temp_value}}, Wind {{plant.wind_condition}} {{plant.wind_value}}, Rain {{plant.precipitation_chance_condition}} {{plant.precipitation_chance_value}}</p>
+                    <p class="card-text">{{plant.action}} the {{plant.name}}</p>
                 {% endfor %}
             {% else %}
                 <p class="card-text">No Plant Care Recommendations</p>

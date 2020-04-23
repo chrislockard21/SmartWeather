@@ -1,0 +1,86 @@
+[
+    { "model": "weather.Activity",
+        "pk": 0,
+        "fields": {
+            "name": "Hiking",
+            "description": "desc",
+            "user": 0,
+            "min_temp":  50,
+            "max_temp":  80,
+            "min_wind":  0,
+            "max_wind":  20,
+            "min_precipitation_chance": 0,
+            "max_precipitation_chance": 20
+        }
+    },
+    { "model": "weather.Activity",
+        "pk": 1,
+        "fields": {
+            "name": "Flying Kites",
+            "description": "desc",
+            "user": 0,
+            "min_temp":  50,
+            "max_temp":  85,
+            "min_wind":  10,
+            "max_wind":  30,
+            "min_precipitation_chance": 0,
+            "max_precipitation_chance": 20
+        }
+    },
+    { "model": "weather.Activity",
+        "pk": 2,
+        "fields": {
+            "name": "Build a Snow Fort",
+            "description": "desc",
+            "user": 0,
+            "min_temp":  0,
+            "max_temp":  32,
+            "min_wind":  0,
+            "max_wind":  10,
+            "min_precipitation_chance": 30,
+            "max_precipitation_chance": 100
+        }
+    },
+    { "model": "weather.Activity",
+        "pk": 3,
+        "fields": {
+            "name": "Bike Ride",
+            "description": "desc",
+            "user": 0,
+            "min_temp":  45,
+            "max_temp":  90,
+            "min_wind":  0,
+            "max_wind":  10,
+            "min_precipitation_chance": 0,
+            "max_precipitation_chance": 20
+        }
+    },
+    { "model": "weather.Activity",
+        "pk": 4,
+        "fields": {
+            "name": "Go Swimming",
+            "description": "desc",
+            "user": 0,
+            "min_temp":  60,
+            "max_temp":  110,
+            "min_wind":  0,
+            "max_wind":  20,
+            "min_precipitation_chance": 0,
+            "max_precipitation_chance": 20
+        }
+    },
+    { "model": "weather.Activity",
+        "pk": 5,
+        "fields": {
+            "name": "Visit a Museum",
+            "description": "desc",
+            "user": 0,
+            "min_temp":  null,
+            "max_temp":  110,
+            "min_wind":  null,
+            "max_wind":  40,
+            "min_precipitation_chance": 0,
+            "max_precipitation_chance": 100
+        }
+    }
+]

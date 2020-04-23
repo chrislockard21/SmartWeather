@@ -8,12 +8,12 @@ class Activity(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=500)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    min_temp = models.IntegerField(default=70)
-    max_temp = models.IntegerField(default=90)
-    min_wind = models.IntegerField(default=0)
-    max_wind = models.IntegerField(default=20)
-    min_precipitation_chance = models.DecimalField(default=0, decimal_places=1, max_digits=4)
-    max_precipitation_chance = models.DecimalField(default=50, decimal_places=1, max_digits=4)
+    min_temp = models.IntegerField(default=None, blank=True, null=True)
+    max_temp = models.IntegerField(default=None, blank=True, null=True)
+    min_wind = models.IntegerField(default=None, blank=True, null=True)
+    max_wind = models.IntegerField(default=None, blank=True, null=True)
+    min_precipitation_chance = models.DecimalField(default=None, decimal_places=1, max_digits=4, blank=True, null=True)
+    max_precipitation_chance = models.DecimalField(default=None, decimal_places=1, max_digits=4, blank=True, null=True)
 
     #for future recommendations
     #sunny = models.BooleanField(default=True)
