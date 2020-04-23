@@ -136,7 +136,7 @@
             <h5 class="card-title">PLANT CARE RECOMMENDATIONS</h5>
             {% if plants %}
                 {% for plant in plants %}
-                    <p class="card-text">{{plant.name}}: {{plant.action}}</p>
+                    <p class="card-text">{{plant.action}} the {{plant.name}}</p>
                 {% endfor %}
             {% else %}
                 <p class="card-text">No Plant Care Recommendations</p>

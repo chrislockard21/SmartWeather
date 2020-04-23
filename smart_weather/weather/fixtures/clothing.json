@@ -2,12 +2,12 @@
     { "model": "weather.Clothing",
         "pk": 0,
         "fields": {
-            "name": "Winter Coat",
+            "name": "Heavy Coat",
             "temp_value":  32,
             "temp_condition":  "LT",
-            "wind_value":  -1,
+            "wind_value":  null,
             "wind_condition":  "GT",
-            "precipitation_chance_value":  -1,
+            "precipitation_chance_value":  null,
             "precipitation_chance_condition": "GT"
         }
     },
@@ -15,9 +15,9 @@
         "pk": 1,
         "fields": {
             "name": "Rain Jacket",
-            "temp_value":  -1,
+            "temp_value":  null,
             "temp_condition":  "LT",
-            "wind_value":  -1,
+            "wind_value":  null,
             "wind_condition":  "GT",
             "precipitation_chance_value":  30,
             "precipitation_chance_condition": "GT"
@@ -27,11 +27,59 @@
         "pk": 2,
         "fields": {
             "name": "Wind Breaker",
-            "temp_value":  -1,
+            "temp_value":  null,
             "temp_condition":  "LT",
             "wind_value":  20,
             "wind_condition":  "GT",
-            "precipitation_chance_value":  -1,
+            "precipitation_chance_value":  null,
+            "precipitation_chance_condition": "GT"
+        }
+    },
+    { "model": "weather.Clothing",
+        "pk": 3,
+        "fields": {
+            "name": "Water Resistant Footwear",
+            "temp_value":  null,
+            "temp_condition":  "LT",
+            "wind_value":  null,
+            "wind_condition":  "GT",
+            "precipitation_chance_value":  80,
+            "precipitation_chance_condition": "GT"
+        }
+    },
+    { "model": "weather.Clothing",
+        "pk": 4,
+        "fields": {
+            "name": "Boots",
+            "temp_value":  32,
+            "temp_condition":  "LT",
+            "wind_value":  null,
+            "wind_condition":  "GT",
+            "precipitation_chance_value":  80,
+            "precipitation_chance_condition": "GT"
+        }
+    },
+    { "model": "weather.Clothing",
+        "pk": 5,
+        "fields": {
+            "name": "Warm Weather Clothes",
+            "temp_value":  85,
+            "temp_condition":  "GT",
+            "wind_value":  null,
+            "wind_condition":  "GT",
+            "precipitation_chance_value":  null,
+            "precipitation_chance_condition": "GT"
+        }
+    },
+    { "model": "weather.Clothing",
+        "pk": 6,
+        "fields": {
+            "name": "Light Jacket",
+            "temp_value":  55,
+            "temp_condition":  "LT",
+            "wind_value":  null,
+            "wind_condition":  "GT",
+            "precipitation_chance_value":  null,
             "precipitation_chance_condition": "GT"
         }
     }

@@ -261,7 +261,8 @@ class WeatherUtil:
 
     def get_weather_forecast_by_lat_long(self, lat, long):
         weather = self.get_weather_by_lat_long(lat, long)
-        # print(weather.text)
+        if weather is None:
+            return None
 
         def get_hourly_forecast(weather_json_str, start_hour):
             weather_props = json.loads(weather_json_str)["properties"]
@@ -384,5 +385,5 @@ class WeatherUtil:
 # weather_utils = WeatherUtil()
 # weather_utils.get_weather_grid()
 # weather_utils.get_location("raliegh, nc")
-# print(weather_utils.get_weather_forecast_by_location_str("Kenosha"))
+# print(weather_utils.get_weather_forecast_by_location_str("Warsaw"))
 # print(weather_utils.get_weather_forecast_by_lat_long(35.7803977, -78.6390989))
