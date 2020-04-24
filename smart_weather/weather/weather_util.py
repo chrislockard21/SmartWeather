@@ -145,7 +145,7 @@ def get_daily_values(json_list, return_a_list):
                 'date': cur_date,
                 'max_value': cur_max_val,
                 'min_value': cur_min_val,
-                'avg_value': round(cur_total/cur_cnt, 2)
+                'avg_value': int(cur_total/cur_cnt)
             }
             ret_obj[cur_date] = new_obj
             ret_list.append(new_obj)
@@ -167,7 +167,7 @@ def get_daily_values(json_list, return_a_list):
             'date': cur_date,
             'max_value': cur_max_val,
             'min_value': cur_min_val,
-            'avg_value': round(cur_total/cur_cnt, 2)
+            'avg_value': int(cur_total/cur_cnt)
         }
         ret_obj[cur_date] = new_obj
         ret_list.append(new_obj)
@@ -382,8 +382,8 @@ class WeatherUtil:
         return self.get_weather_forecast_by_lat_long(location.latitude, location.longitude)
 
 
-# weather_utils = WeatherUtil()
+weather_utils = WeatherUtil()
 # weather_utils.get_weather_grid()
 # weather_utils.get_location("raliegh, nc")
-# print(weather_utils.get_weather_forecast_by_location_str("Warsaw"))
+print(weather_utils.get_weather_forecast_by_location_str("Amelia, Ohio"))
 # print(weather_utils.get_weather_forecast_by_lat_long(35.7803977, -78.6390989))

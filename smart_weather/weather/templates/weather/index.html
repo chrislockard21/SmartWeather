@@ -63,12 +63,17 @@
                     {% if weather.daily_forecast %}
                     <h5>DAILY FORECAST</h5>
                     <table class="w-100">
-                        {% for val in weather.daily_forecast %}
                         <tr>
-                            <td>{{val.day}}</td>
-                            <td>H: {{val.max_temperature}} &#730;F</td>
-                            <td>L: {{val.min_temperature}} &#730;F</td>
+                            <td></td>
+                            <td>Temp H/L<F></F></td>
+                            <td>Precipitation Probability</td>
                         </tr>
+                        {% for val in weather.daily_forecast %}
+                            <tr>
+                                <td>{{val.day}}</td>
+                                <td>{{val.max_temperature}}&#730;F / {{val.min_temperature}}&#730;<F></F></td>
+                                <td>{{val.avg_precipitation_probability}}%</td>
+                            </tr>
                         {% endfor %}
                     </table>
                     {% else %}
