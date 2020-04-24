@@ -30,8 +30,8 @@ def get_activities(forecast, user):
                 (activity.max_wind is None or activity.max_wind >= forecast['max_wind_speed']) and
                 (activity.min_temp is None or activity.min_temp <= forecast['min_temperature']) and
                 (activity.max_temp is None or activity.max_temp >= forecast['max_temperature']) and
-                (activity.min_precipitation_chance is None or activity.min_precipitation_chance <= forecast['min_precipitation_probability']) and
-                (activity.max_precipitation_chance is None or activity.max_precipitation_chance >= forecast['max_precipitation_probability'])):
+                (activity.min_precipitation_chance is None or activity.min_precipitation_chance <= forecast['avg_precipitation_probability']) and
+                (activity.max_precipitation_chance is None or activity.max_precipitation_chance >= forecast['avg_precipitation_probability'])):
             ret_activities.append(activity)
 
     return ret_activities
@@ -80,7 +80,7 @@ def get_clothing(forecast):
                 if forecast['max_precipitation_probability'] >= clothing_opt.precipitation_chance_value:
                     should_add = True
             else:
-                if forecast['min_precipitation_probability'] <= clothing_opt.precipitation_chance_value:
+                if forecast['avg_precipitation_probability'] <= clothing_opt.precipitation_chance_value:
                     should_add = True
         if should_add:
             ret_clothing.append(clothing_opt)
@@ -130,7 +130,7 @@ def get_plant_care(forecast, user):
                 if forecast['max_precipitation_probability'] >= plant.precipitation_chance_value:
                     should_add = True
             else:
-                if forecast['min_precipitation_probability'] <= plant.precipitation_chance_value:
+                if forecast['avg_precipitation_probability'] <= plant.precipitation_chance_value:
                     should_add = True
         if should_add:
             ret_plants.append(plant)
