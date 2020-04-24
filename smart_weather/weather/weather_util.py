@@ -382,8 +382,8 @@ class WeatherUtil:
         return self.get_weather_forecast_by_lat_long(location.latitude, location.longitude)
 
 
-weather_utils = WeatherUtil()
+# weather_utils = WeatherUtil()
 # weather_utils.get_weather_grid()
 # weather_utils.get_location("raliegh, nc")
-print(weather_utils.get_weather_forecast_by_location_str("Amelia, Ohio"))
+# print(weather_utils.get_weather_forecast_by_location_str("Amelia, Ohio"))
 # print(weather_utils.get_weather_forecast_by_lat_long(35.7803977, -78.6390989))

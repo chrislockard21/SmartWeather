@@ -77,7 +77,7 @@ def get_clothing(forecast):
                     should_add = True
         if clothing_opt.precipitation_chance_value is not None:
             if clothing_opt.precipitation_chance_condition == "GT":
-                if forecast['max_precipitation_probability'] >= clothing_opt.precipitation_chance_value:
+                if forecast['avg_precipitation_probability'] >= clothing_opt.precipitation_chance_value:
                     should_add = True
             else:
                 if forecast['avg_precipitation_probability'] <= clothing_opt.precipitation_chance_value:
@@ -127,7 +127,7 @@ def get_plant_care(forecast, user):
                     should_add = True
         if plant.precipitation_chance_value is not None:
             if plant.precipitation_chance_condition == "GT":
-                if forecast['max_precipitation_probability'] >= plant.precipitation_chance_value:
+                if forecast['avg_precipitation_probability'] >= plant.precipitation_chance_value:
                     should_add = True
             else:
                 if forecast['avg_precipitation_probability'] <= plant.precipitation_chance_value:
